@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+/* =========================
+   CI Design Tokens
+========================= */
+@theme {
+
+  /* =========================
+     Brand / CI Colors
+  ========================= */
+  --color-ci-primary: #38A3A5;
+  --color-ci-secondary-1: #22577A;
+  --color-ci-secondary-2: #57CC99;
+  --color-ci-secondary-3: #80ED99;
+
+  /* =========================
+     Light Theme Background
+  ========================= */
+  --color-bg-light-1: #F1F6F9;
+  --color-bg-light-2: #BCCCDC;
+
+  /* =========================
+     Dark Theme Background
+  ========================= */
+  --color-bg-dark-1: #212A3E;
+  --color-bg-dark-2: #394867;
+
+  /* =========================
+     Disabled
+  ========================= */
+  --color-disabled-1: #9BA4B5;
+  --color-disabled-2: #BFC9D1;
+
+  /* =========================
+     Text Scale
+  ========================= */
+  --color-text-900: #0B132B;
+  --color-text-800: #152746;
+  --color-text-700: #253B63;
+  --color-text-600: #3A5284;
+  --color-text-500: #566FA8;
+  --color-text-400: #7F92C0;
+  --color-text-300: #A6B3D4;
+  --color-text-200: #C9D1E6;
+  --color-text-100: #F7F7FF;
+
+  /* =========================
+     Semantic Colors
+  ========================= */
+  --color-success-light: #BCD9A2;
+  --color-success: #6D9E51;
+
+  --color-error-light: #FF5B5B;
+  --color-error: #A82323;
+
+  --color-warning-light: #F7DB91;
+  --color-warning: #FFA240;
+
+  --color-link-light: #00A6FB;
+  --color-link: #0582CA;
+}
