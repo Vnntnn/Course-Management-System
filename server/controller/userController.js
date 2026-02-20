@@ -31,7 +31,7 @@ exports.getAllUsers = async (req, res) => {
 };
 
 exports.getuserById = async (req, res) => {
-	const { id } = req.params.id;
+	const id  = req.params.id;
 
 	try
 	{
