@@ -1,10 +1,14 @@
 <script setup>
 import { HugeiconsIcon } from '@hugeicons/vue';
 import { Moon02Icon } from '@hugeicons/core-free-icons';
-
+let i = 0;
+let theme = ["text-primary bg-bg-dark-1 text-text-100","text-primary bg-bg-light-1 text-text-900"];
 function changeTheme(){
-    document.body.classList = "bg-bg-dark-1 text-text-100"
+    i++;
+    document.body.classList = theme[i%2];
 }
+
+changeTheme();
 </script>
 
 <template>
