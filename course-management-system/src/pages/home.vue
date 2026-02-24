@@ -4,7 +4,7 @@ import { HugeiconsIcon } from "@hugeicons/vue";
 import * as icons from "@hugeicons/core-free-icons";
 import buttons from '@/assets/button.vue'
 import { computed } from "vue";
-import { useRouter } from 'vue-router'
+import { go } from '@/utils/navigation'
 
 const props = defineProps({
   theme: {
@@ -21,15 +21,6 @@ const classes = computed(() => {
   return theme[props.theme];
 });
 
-const router = useRouter()
-
-function goLogin() {
-  router.push('/login')
-}
-
-function goSignup() {
-  router.push('/signin')
-}
 </script>
 
 <template>
@@ -43,7 +34,7 @@ function goSignup() {
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit amet dolorem inventore tenetur! Accusamus qui, officia animi omnis voluptatem quas nobis, rem sunt quod voluptates, quia ipsum unde corrupti vitae!
       </p>
       <div class="flex flex-col gap-2 items-center">
-        <buttons size="large" @click="goSignup">
+        <buttons size="large" @click="go('/signin')">
           Get Started
           <HugeiconsIcon
             :icon="icons.ArrowRight01Icon"
@@ -52,7 +43,7 @@ function goSignup() {
             :stroke-width="2.5"
           />
         </buttons>
-        <p class="text-text-400">Already have an Acccount?<a href="#" class="underline" @click="goLogin">Log In</a></p>
+        <p class="text-text-400">Already have an Acccount?<a href="#" class="underline" @click="go('/login')">Log In</a></p>
       </div>
     </section>
     <section>

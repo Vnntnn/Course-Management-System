@@ -23,5 +23,5 @@ const inputtype = computed(() => {
 </script>
 
 <template>
-    <input :type="input_type" :placeholder="input_placeholder" class="font-semibold text-text-400 px-2 py-1 border rounded"/>
+    <input :type="input_type" :placeholder="input_placeholder" class="font-semibold text-text-400 px-2 py-1 border rounded w-full"/>
 </template>
