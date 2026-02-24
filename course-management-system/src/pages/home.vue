@@ -43,7 +43,7 @@ function goSignup() {
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit amet dolorem inventore tenetur! Accusamus qui, officia animi omnis voluptatem quas nobis, rem sunt quod voluptates, quia ipsum unde corrupti vitae!
       </p>
       <div class="flex flex-col gap-2 items-center">
-        <buttons size="large">
+        <buttons size="large" @click="goSignup">
           Get Started
           <HugeiconsIcon
             :icon="icons.ArrowRight01Icon"

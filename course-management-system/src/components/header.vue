@@ -4,6 +4,7 @@ import { Moon02Icon } from '@hugeicons/core-free-icons';
 import smallbutton from '@/assets/button.vue';
 import { Type } from '@hugeicons/core-free-icons/index';
 import { computed } from 'vue';
+import { useRouter } from 'vue-router';
 
 const props = defineProps({
     theme: {
@@ -23,14 +24,24 @@ const classes = computed(() => {
     return `${base} ${theme[props.theme]}`
 });
 
+const router = useRouter();
+
+function goLogin(){
+    router.push('/login');
+}
+
+function goSignup() {
+  router.push('/signin')
+}
+
 </script>
 
 <template>
     <header :class="classes">
         <h1 class="text-xl font-bold">CMS</h1>
         <div class="flex gap-4 items-center">
-            <smallbutton>Sign In</smallbutton>
-            <smallbutton variant="primary_border">Log In</smallbutton>
+            <smallbutton @click="goSignup">Sign In</smallbutton>
+            <smallbutton variant="primary_border" @click="goLogin">Log In</smallbutton>
             <smallbutton variant="primary_border">
                 <HugeiconsIcon :icon="Moon02Icon" :size="24" color="currentColor"/>
             </smallbutton>
