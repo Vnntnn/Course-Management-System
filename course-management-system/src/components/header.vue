@@ -1,24 +1,37 @@
 <script setup>
 import { HugeiconsIcon } from '@hugeicons/vue';
 import { Moon02Icon } from '@hugeicons/core-free-icons';
-import smallbutton from '@/assets/button.vue'
-let i = 0;
-let theme = ["text-primary bg-bg-light-1 text-text-900","text-primary bg-bg-dark-1 text-text-100"];
-function changeTheme(){
-    i++;
-    document.body.classList = theme[i%2];
-}
+import smallbutton from '@/assets/button.vue';
+import { Type } from '@hugeicons/core-free-icons/index';
+import { computed } from 'vue';
 
-changeTheme();
+const props = defineProps({
+    theme: {
+        Type: String,
+        default: 'light'
+    }
+});
+
+const classes = computed(() => {
+    const base = "flex fixed w-screen justify-between px-8 py-4 items-center shadow-lg"
+
+    const theme = {
+        light: "bg-bg-white-1 text-text-900",
+        dark: "bg-bg-dark-1 text-text-100"
+    }
+
+    return `${base} ${theme[props.theme]}`
+});
+
 </script>
 
 <template>
-    <header class="flex fixed w-screen justify-between px-8 py-4 items-center shadow-lg">
+    <header :class="classes">
         <h1 class="text-xl font-bold">CMS</h1>
         <div class="flex gap-4 items-center">
             <smallbutton>Sign In</smallbutton>
             <smallbutton variant="primary_border">Log In</smallbutton>
-            <smallbutton variant="primary_border" @click="changeTheme">
+            <smallbutton variant="primary_border">
                 <HugeiconsIcon :icon="Moon02Icon" :size="24" color="currentColor"/>
             </smallbutton>
         </div>
