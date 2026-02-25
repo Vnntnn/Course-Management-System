@@ -1,40 +1,33 @@
 <script setup>
 import { HugeiconsIcon } from '@hugeicons/vue';
-import { Moon02Icon } from '@hugeicons/core-free-icons';
+import * as icons from '@hugeicons/core-free-icons';
 import smallbutton from '@/assets/button.vue';
 import { computed } from 'vue';
-import { useRouter } from 'vue-router';
 
 import { go } from '@/utils/navigation';
-
-const props = defineProps({
-    theme: {
-        Type: String,
-        default: 'light'
-    }
-});
+import { theme, toggleTheme } from '@/utils/theme'
 
 const classes = computed(() => {
-    const base = "flex fixed w-screen justify-between px-8 py-4 items-center shadow-lg"
+    const base = "flex fixed w-screen justify-between px-8 py-4 items-center shadow-lg z-10"
 
-    const theme = {
-        light: "bg-bg-light-1 text-text-900",
-        dark: "bg-bg-dark-1 text-text-100"
-    }
-
-    return `${base} ${theme[props.theme]}`
+    return `${base} ${theme}`
 });
 
 </script>
 
 <template>
     <header :class="classes">
-        <h1 class="text-xl font-bold" @click="go('/')">CMS</h1>
+        <h1 class="text-xl font-bold hover:cursor-pointer" @click="go('/')">CMS</h1>
         <div class="flex gap-4 items-center">
-            <smallbutton @click="go('/signin')">Sign In</smallbutton>
-            <smallbutton variant="primary_border" @click="go('/login')">Log In</smallbutton>
-            <smallbutton variant="primary_border">
-                <HugeiconsIcon :icon="Moon02Icon" :size="24" color="currentColor"/>
+            <div class="flex gap-4"> <!-- No Account -->
+                <smallbutton @click="go('/signup')">Sign Up</smallbutton>
+                <smallbutton variant="primary_border" @click="go('/login')">Log In</smallbutton>
+            </div>
+            <div> <!-- Has Account -->
+                <smallbutton variant="primary_border" size="small_squared" @click="go('/user')"><HugeiconsIcon :icon="icons.UserIcon"/></smallbutton>
+            </div>
+            <smallbutton variant="primary_border" @click="toggleTheme()">
+                <HugeiconsIcon :icon="icons.Moon02Icon" :size="24" color="currentColor"/>
             </smallbutton>
         </div>
     </header>

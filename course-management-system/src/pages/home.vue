@@ -1,31 +1,12 @@
 <script setup>
-import Header from "@/components/header.vue";
 import { HugeiconsIcon } from "@hugeicons/vue";
 import * as icons from "@hugeicons/core-free-icons";
 import buttons from '@/assets/button.vue'
-import { computed } from "vue";
 import { go } from '@/utils/navigation'
-
-const props = defineProps({
-  theme: {
-    type: String,
-    default: "dark"
-  }
-});
-
-const classes = computed(() => {
-  const theme = {
-    light: "bg-bg-white-1 text-text-900",
-    dark: "bg-bg-dark-1 text-text-100"
-  }
-  return theme[props.theme];
-});
 
 </script>
 
 <template>
-<div :class="props.theme === 'light' ? 'dark' : ''">
-  <Header :theme="classes"/>
 
   <main class="[&>section]:h-screen">
     <section class="flex items-center justify-center flex-col gap-8">
@@ -34,7 +15,7 @@ const classes = computed(() => {
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit amet dolorem inventore tenetur! Accusamus qui, officia animi omnis voluptatem quas nobis, rem sunt quod voluptates, quia ipsum unde corrupti vitae!
       </p>
       <div class="flex flex-col gap-2 items-center">
-        <buttons size="large" @click="go('/signin')">
+        <buttons size="large_rect" @click="go('/signup')">
           Get Started
           <HugeiconsIcon
             :icon="icons.ArrowRight01Icon"
@@ -50,6 +31,4 @@ const classes = computed(() => {
 
     </section>
   </main>
-</div>
-
 </template>

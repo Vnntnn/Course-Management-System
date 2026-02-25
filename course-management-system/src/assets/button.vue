@@ -13,7 +13,7 @@ const props = defineProps({
   },
   size: {
     type: String,
-    default: 'small'
+    default: 'small_rect'
   }
 })
 
@@ -22,8 +22,9 @@ const classes = computed(() => {
     'inline-flex items-center rounded-xl transition-colors duration-200 hover:cursor-pointer'
 
   const size = {
-    small: 'px-4 py-2',
-    large: 'px-6 py-4 text-xl font-semibold gap-4'
+    small_rect: 'px-4 py-2',
+    small_squared: 'p-2',
+    large_rect: 'px-6 py-4 text-xl font-semibold gap-4'
   }
 
   const variants = {
