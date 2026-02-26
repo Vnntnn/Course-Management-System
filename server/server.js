@@ -18,16 +18,16 @@ app.use(express.json());
 
 // Routes
 app.get("/", (req, res) => {
-	res.json({ message: "Course Management System API" });
+  res.json({ message: "Course Management System API" });
 });
 
 // Port listening
 app.listen(PORT, () => {
-	console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
 
 // Shutdown
-process.on('SIGINT', async () => {
-	await prisma.$disconnect();
-	process.exit(0);
+process.on("SIGINT", async () => {
+  await prisma.$disconnect();
+  process.exit(0);
 });
