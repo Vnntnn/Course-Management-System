@@ -1,10 +1,7 @@
-const nodemon = require("nodemon");
-const { Sequelize } = require("sequelize");
+const { PrismaClient } = require("@prisma/client");
 
-const sequelize = new Sequelize({
-	dialect: "sqlite",
-	storage: "./database.sqlite",
-	logging: process.env.DB_LOGGING === "true" || false
+const prisma = new PrismaClient({
+  log: ["error", "warn"],
 });
 
-module.exports = sequelize;
+module.exports = prisma;
