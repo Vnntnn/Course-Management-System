@@ -1,12 +1,13 @@
 const prisma = require("../config/database");
+const bcrypt = require("bcryptjs");
 
 exports.createUser = async (req, res) => {
-  const { full_name, email, password_hash, role } = req.body;
+  const { fullname, email, password_hash, role } = req.body;
 
   try {
     const user = await prisma.users.create({
       data: {
-        full_name,
+        full_name: fullname,
         email,
         password_hash,
         role: role || "student",
@@ -68,5 +69,53 @@ exports.deleteUser = async (req, res) => {
     res.json({ message: "User deleted successfully" });
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+};
+
+exports.registerUser = async (req, res) => {
+  const { full_name, email, password, role } = req.body;
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await prisma.users.create({
+      data: {
+        full_name,
+        email,
+        password_hash: hashedPassword,
+        role: role || "student", // default role is student
+      },
+    });
+    res.status(201).json({
+      message: "User registered successfully!",
+      userId: newUser.id,
+    });
+  } catch (err) {
+    res.status(400).json({
+      message: "Email already been registered or invalid data!",
+    });
+  }
+};
+
+exports.loginUser = async (req, res) => {
+  const { email, password } = req.body;
+  
+  try {
+    const user = await prisma.users.findUnique({ where: { email } });
+    
+    if (!user) {
+      return res.status(401).json({ message: "No user email found in our database" });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Password is incorrect" });
+    }
+    
+    res.json({
+      message: "Login successful!",
+      userId: user.id,
+      role: user.role,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
   }
 };
