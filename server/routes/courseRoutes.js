@@ -1,7 +1,7 @@
 /**
- * 
+ *
  * Routes user to course API endpoints
- * 
+ *
  */
 
 const express = require("express");
@@ -13,6 +13,11 @@ const { ensureAuthenticated, isInstructor } = require("../middleware/auth");
 router.get("/", ensureAuthenticated, courseController.getAllCourses);
 
 // Course create only for instructor
-router.post("/create", ensureAuthenticated, isInstructor, courseController.createCourse);
+router.post(
+  "/create",
+  ensureAuthenticated,
+  isInstructor,
+  courseController.createCourse,
+);
 
 module.exports = router;

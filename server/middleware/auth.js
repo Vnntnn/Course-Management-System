@@ -1,38 +1,38 @@
 /**
- * 
- * Middleware to ensure that the user is login before accessing to resources
- * 
+ * Authentication middleware
  */
 
-// Check authentication
+// Ensure user is authenticated
 exports.ensureAuthenticated = (req, res, next) => {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    
-    res.status(401).json({
-        message: "Please, Login first!"
-    });
+  if (req.isAuthenticated()) {
+    return next();
+  }
+
+  res.status(401).json({
+    message: "Authentication required",
+  });
 };
 
-// Check instructor role
-exports.isInstructor = (req, res, next) => {
-    if (req.isAuthenticated() && req.user.role === "instructor") {
-        return next();
+// Check if user has required role(s)
+exports.hasRole = (...roles) => {
+  return (req, res, next) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({
+        message: "Authentication required",
+      });
     }
 
-    res.status(403).json({
-        message: "Access denied. Instructors only."
-    });
-}
-
-// Check student role
-exports.isStudent = (req, res, next) => {
-    if (req.isAuthenticated() && req.user.role === "student") {
-        return next();
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({
+        message: "Access denied. Insufficient permissions",
+      });
     }
 
-    res.status(403).json({
-        message: "Access denied. Students only."
-    });
-}
+    next();
+  };
+};
+
+exports.isStudent = exports.hasRole("student");
+exports.isInstructor = exports.hasRole("instructor");
+exports.isAdmin = exports.hasRole("admin");
+exports.isInstructorOrAdmin = exports.hasRole("instructor", "admin");
