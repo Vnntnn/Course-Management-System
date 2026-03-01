@@ -20,10 +20,9 @@ exports.register = async (req, res) => {
     });
   }
 
-  const validRoles = ["student", "instructor", "admin"];
-  if (role && !validRoles.includes(role) && role !== "student") {
+  if (role && role !== "student") {
     return res.status(400).json({
-      message: "Invalid role. Public registration only allows 'student' role",
+      message: "Public registration only allows 'student' role",
     });
   }
 

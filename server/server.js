@@ -29,6 +29,9 @@ app.use(passport.session());
 // User routes
 app.use("/api/users", userRoutes);
 
+// Course routes
+app.use("/api/courses", require("./routes/courseRoutes"));
+
 // Routes
 app.get("/", (req, res) => {
   res.json({ message: "Course Management System API" });

@@ -9,7 +9,7 @@ router
 
 router
   .route("/:id")
-  .get(userController.getuserById)
+  .get(userController.getUserById)
   .put(userController.updateUser)
   .delete(userController.deleteUser);
 
