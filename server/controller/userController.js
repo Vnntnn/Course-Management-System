@@ -1,68 +1,89 @@
 const prisma = require("../config/database");
-const bcrypt = require("bcryptjs");
 
-exports.createUser = async (req, res) => {
-  const { fullname, email, password_hash, role } = req.body;
-
-  if (fullname === undefined || email === undefined || password_hash === undefined) {
-    return res.status(400).json({ error: "Full name, email and password are required" });
-  }
-
-  try {
-    const user = await prisma.users.create({
-      data: {
-        full_name: fullname,
-        email,
-        password_hash,
-        role: role || "student",
-      },
-    });
-    res.status(201).json(user);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
-
+/**
+ * Get all users
+ */
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await prisma.users.findMany();
+    const users = await prisma.users.findMany({
+      select: {
+        id: true,
+        full_name: true,
+        email: true,
+        role: true,
+        created_at: true,
+      },
+    });
     res.json(users);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to retrieve users", error: error.message });
   }
 };
 
+/**
+ * Get user by ID
+ */
 exports.getUserById = async (req, res) => {
   const { id } = req.params;
 
   try {
     const user = await prisma.users.findUnique({
       where: { id: parseInt(id) },
+      select: {
+        id: true,
+        full_name: true,
+        email: true,
+        role: true,
+        created_at: true,
+      },
     });
-    if (user) {
-      res.json(user);
-    } else {
-      res.status(404).json({ error: "User not found" });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
+
+    res.json(user);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to retrieve user", error: error.message });
   }
 };
 
+/**
+ * Update user details
+ */
 exports.updateUser = async (req, res) => {
   const { id } = req.params;
+  const { full_name, role } = req.body;
 
   try {
     const user = await prisma.users.update({
       where: { id: parseInt(id) },
-      data: req.body,
+      data: {
+        ...(full_name && { full_name }),
+        ...(role && { role }),
+      },
+      select: {
+        id: true,
+        full_name: true,
+        email: true,
+        role: true,
+      },
     });
-    res.json(user);
+    res.json({ message: "User updated successfully", user });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res
+      .status(400)
+      .json({ message: "Failed to update user", error: error.message });
   }
 };
 
+/**
+ * Delete a user
+ */
 exports.deleteUser = async (req, res) => {
   const { id } = req.params;
 
@@ -72,30 +93,9 @@ exports.deleteUser = async (req, res) => {
     });
     res.json({ message: "User deleted successfully" });
   } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
-
-exports.registerUser = async (req, res) => {
-  const { full_name, email, password, role } = req.body;
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await prisma.users.create({
-      data: {
-        full_name,
-        email,
-        password_hash: hashedPassword,
-        role: role || "student", // default role is student
-      },
-    });
-    res.status(201).json({
-      message: "User registered successfully!",
-      userId: user.id,
-    });
-  } catch (err) {
-    res.status(400).json({
-      message: "Email already been registered or invalid data!",
-    });
+    res
+      .status(400)
+      .json({ message: "Failed to delete user", error: error.message });
   }
 };
 

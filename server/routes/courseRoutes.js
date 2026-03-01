@@ -12,7 +12,7 @@ const { ensureAuthenticated, isInstructor } = require("../middleware/auth");
 // If user login, allow to access course
 router.get("/", ensureAuthenticated, courseController.getAllCourses);
 
-// Course create only for instructor
+// Only instructors can create courses
 router.post(
   "/create",
   ensureAuthenticated,

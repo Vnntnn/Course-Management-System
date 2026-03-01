@@ -1,16 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controller/userController");
+const { ensureAuthenticated, isAdmin } = require("../middleware/auth");
 
-router
-  .route("/")
-  .get(userController.getAllUsers)
-  .post(userController.createUser);
+// Only admins can view all users
+router.route("/").get(ensureAuthenticated, isAdmin, userController.getAllUsers);
 
 router
   .route("/:id")
-  .get(userController.getUserById)
-  .put(userController.updateUser)
-  .delete(userController.deleteUser);
+  .get(ensureAuthenticated, userController.getUserById)
+  .put(ensureAuthenticated, userController.updateUser)
+  .delete(ensureAuthenticated, isAdmin, userController.deleteUser);
 
 module.exports = router;
