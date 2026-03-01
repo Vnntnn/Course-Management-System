@@ -84,7 +84,7 @@ exports.login = (req, res, next) => {
 
     if (!user) {
       return res.status(401).json({
-        message: info.message || "Invalid credentials",
+        message: (info && info.message) || "Invalid credentials",
       });
     }
 
