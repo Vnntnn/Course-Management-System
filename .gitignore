@@ -3,6 +3,5 @@
 .env.*
 
 # Postman
-*.postman_collection
-*.postman_environment
 *.postman
+*.postman/*
