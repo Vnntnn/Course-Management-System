@@ -71,3 +71,37 @@ exports.getAllCourses = async (req, res) => {
       .json({ message: "Failed to retrieve courses", error: error.message });
   }
 };
+
+exports.updateCourse = async (req, res) => {
+    const { id } = req.params;
+    const { title, description, thumbnail_url } = req.body;
+
+    try {
+        const updated = await prisma.courses.update({
+            where: { id: parseInt(id), instructor_id: req.user.id },
+            data: {
+                title,
+                description,
+                thumbnail_url
+            }
+        });
+        res.json({ message: "Course updated", course: updated });
+    }
+    catch (error) {
+        res.status(403).json({ message: "Update course failed.", error: error.message });
+    }
+};
+
+exports.deleteCourse = async (req, res) => {
+    const { id } = req.params;
+    
+    try {
+        await prisma.courses.delete({
+            where: { id: parseInt(id), instructor_id: req.user.id }
+        });
+        res.json({ message: "Course deleted successfully" });
+    }
+    catch (error) {
+        res.status(403).json({ message: "Delete course failed.", error: error.message });
+    }
+};
