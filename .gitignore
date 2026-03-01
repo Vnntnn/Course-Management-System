@@ -1,7 +1,3 @@
 # Ignore environment variable files
 .env
 .env.*
-
-# Postman
-*.postman
-*.postman/*
