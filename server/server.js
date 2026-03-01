@@ -12,21 +12,22 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 require("./config/passport")(passport);
 
-// User routes
-app.use("/api/users", userRoutes);
-
 // Middleware
 app.use(cors());
 app.use(express.json());
+
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "secret",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
   }),
 );
 app.use(passport.initialize());
 app.use(passport.session());
+
+// User routes
+app.use("/api/users", userRoutes);
 
 // Routes
 app.get("/", (req, res) => {

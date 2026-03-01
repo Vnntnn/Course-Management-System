@@ -4,6 +4,10 @@ const bcrypt = require("bcryptjs");
 exports.createUser = async (req, res) => {
   const { fullname, email, password_hash, role } = req.body;
 
+  if (fullname === undefined || email === undefined || password_hash === undefined) {
+    return res.status(400).json({ error: "Full name, email and password are required" });
+  }
+
   try {
     const user = await prisma.users.create({
       data: {
@@ -28,7 +32,7 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
-exports.getuserById = async (req, res) => {
+exports.getUserById = async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -86,7 +90,7 @@ exports.registerUser = async (req, res) => {
     });
     res.status(201).json({
       message: "User registered successfully!",
-      userId: newUser.id,
+      userId: user.id,
     });
   } catch (err) {
     res.status(400).json({
