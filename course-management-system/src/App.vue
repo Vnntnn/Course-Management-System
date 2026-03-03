@@ -9,7 +9,7 @@ import { themeClasses } from '@/utils/theme'
 
   <Header />
 
-  <main class="flex-1 mt-24 mx-5">
+  <main class="">
     <router-view />
   </main>
 

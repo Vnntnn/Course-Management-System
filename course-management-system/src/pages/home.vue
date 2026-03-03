@@ -9,16 +9,16 @@ import { go } from '@/utils/navigation'
 <template>
 
   <main class="[&>section]:h-screen">
-    <section class="flex items-center justify-center flex-col gap-8">
-      <h1 class="text-6xl font-bold">Course Management System</h1>
-      <p class="text-center px-16">
+    <section class="flex items-baseline justify-center flex-col gap-8 pl-16">
+      <h1 class="text-6xl font-bold">CourseWind</h1>
+      <p class="">
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit amet dolorem inventore tenetur! Accusamus qui, officia animi omnis voluptatem quas nobis, rem sunt quod voluptates, quia ipsum unde corrupti vitae!
       </p>
-      <div class="flex flex-col gap-2 items-center">
-        <buttons size="large_rect" @click="go('/signup')">
+      <div class="flex flex-col gap-2">
+        <buttons size="large_rect" @click="go('/signup')" class="flex justify-between">
           Get Started
           <HugeiconsIcon
-            :icon="icons.ArrowRight01Icon"
+            :icon="icons.ArrowRightDoubleIcon"
             :size="24"
             color="currentColor"
             :stroke-width="2.5"
