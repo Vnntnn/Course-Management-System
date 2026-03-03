@@ -47,7 +47,7 @@ const emailClass = computed(() => {
             </div>
             <div class="flex justify-center items-center flex-col gap-2 text-text-400 h-full">
                 You haven't enrolled into any course yet.
-                <Button variant="primary_border" class="flex gap-2">
+                <Button variant="primary_border" @click="go('/coursebrowser')" class="flex gap-2">
                     <HugeiconsIcon :icon="icons.Search02Icon"/>
                     Browse Course
                 </Button>

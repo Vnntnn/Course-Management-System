@@ -68,6 +68,10 @@ import { go } from '@/utils/navigation';
 
             <label>Enter Password*</label>
             <inputtext input_type="password" input_placeholder="Enter Password"/>
+            <ul class="text-text-500 text-xs">
+                <li>Must have at least 8-20 characters</li>
+                <li></li>
+            </ul>
 
             <label>Confirm Password*</label>
             <inputtext input_type="password" input_placeholder="Confirm Password"/>
@@ -76,15 +80,12 @@ import { go } from '@/utils/navigation';
 
 
         <!-- Button -->
-        <Button type="button" class="w-full">Create Account</Button>
+        <Button type="button" class="w-full items-center justify-center flex" @click="go('/user')">Create Account</Button>
 
         </form>
 
 
-    <p class="mt-4 text-center">
-        Already Have an Account?
-        <a @click="go('/login')"  class="underline cursor-pointer font-bold">Log In</a>
-    </p>
+    <p class="mt-4 text-center text-text-300 flex gap-3">Already Have an Account?<a @click="go('/login')"  class="underline cursor-pointer font-bold text-text-100">Log In</a></p>
 
 </main>
 </template>

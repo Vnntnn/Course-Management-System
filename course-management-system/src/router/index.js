@@ -4,6 +4,7 @@ import Home from '@/pages/home.vue'
 import Login from '@/pages/login.vue'
 import Signin from '@/pages/signin.vue'
 import userdashboard from '@/pages/userdashboard.vue'
+import coursebrowser from '@/pages/browsecourse.vue'
 
 const routes = [
   {
@@ -21,6 +22,10 @@ const routes = [
   {
     path: '/user',
     component: userdashboard
+  },
+  {
+    path: '/coursebrowser',
+    component: coursebrowser
   }
 ]
 

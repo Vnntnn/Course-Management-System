@@ -10,8 +10,8 @@ import { go } from '@/utils/navigation'
 
   <main class="[&>section]:h-screen">
     <section class="flex items-baseline justify-center flex-col gap-8 pl-16">
-      <h1 class="text-6xl font-bold">CourseWind</h1>
-      <p class="">
+      <h1 class="text-6xl font-bold">Course<span class="uppercase text-ci-primary">wind</span></h1>
+      <p class="w-1/2 sm:w-1/2 md:w-3/4 lg:w-1/2">
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit amet dolorem inventore tenetur! Accusamus qui, officia animi omnis voluptatem quas nobis, rem sunt quod voluptates, quia ipsum unde corrupti vitae!
       </p>
       <div class="flex flex-col gap-2">

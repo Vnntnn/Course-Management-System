@@ -22,7 +22,7 @@ const classes = computed(() => {
 
 <template>
     <header :class="classes">
-        <h1 class="text-xl font-bold hover:cursor-pointer" @click="go('/')">CourseWind</h1>
+        <h1 class="text-xl font-bold hover:cursor-pointer" @click="go('/')">Course<span class="text-ci-primary uppercase">wind</span></h1>
         <div class="flex gap-4 items-center">
             <div class="flex gap-4"> <!-- No Account -->
                 <smallbutton @click="go('/signup')">Sign Up</smallbutton>

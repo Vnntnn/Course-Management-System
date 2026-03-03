@@ -18,7 +18,7 @@ import { HugeiconsIcon } from '@hugeicons/vue';
             <Inputtext input_type="email" input_placeholder="Email"/>
             <Inputtext input_type="password" input_placeholder="Password"/>
 
-            <Button type="button">Log In</Button>
+            <Button type="button" class="w-full items-center justify-center flex" @click="go('/user')">Create Account</Button>
         </form>
         <p>Need an account? <a @click="go('/signup')" class="underline cursor-pointer font-bold">Sign Up</a></p>
     </main>
