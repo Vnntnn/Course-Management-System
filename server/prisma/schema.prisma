@@ -108,3 +108,15 @@ model student_progress {
   is_completed Boolean   @default(false)
   completed_at DateTime?
 }
+
+model UserProgress {
+  id           Int      @id @default(autoincrement())
+  user_id      Int
+  topic_id     Int
+  completed_at DateTime @default(now())
+
+  user  users  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  topic topics @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, topic_id])
+}
