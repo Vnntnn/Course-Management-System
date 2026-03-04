@@ -19,6 +19,7 @@ model users {
   enrollments      enrollments[]
   exam_results     exam_results[]
   student_progress student_progress[]
+  UserProgress     UserProgress[]
 }
 
 model courses {
@@ -55,6 +56,7 @@ model topics {
   order_index  Int // Topic order within the lesson
 
   student_progress student_progress[]
+  UserProgress     UserProgress[]
 }
 
 model enrollments {

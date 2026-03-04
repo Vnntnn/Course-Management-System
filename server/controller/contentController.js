@@ -21,10 +21,7 @@ exports.createLesson = async (req, res) => {
       );
     }
 
-    const lesson = await contentService.createLesson(
-      course_id,
-      title
-    );
+    const lesson = await contentService.createLesson(course_id, title);
     return sendResponse(
       res,
       lesson,
@@ -84,10 +81,19 @@ exports.getLessonsByCourse = async (req, res) => {
   try {
     const syllabus = await contentService.getFullSyllabus(courseId);
     if (!syllabus) {
-      return sendError(res, 'Course not found', HTTP_STATUS.NOT_FOUND);
+      return sendError(res, "Course not found", HTTP_STATUS.NOT_FOUND);
     }
-    return sendResponse(res, syllabus.lessons, 'Lessons fetched successfully', HTTP_STATUS.OK);
+    return sendResponse(
+      res,
+      syllabus.lessons,
+      "Lessons fetched successfully",
+      HTTP_STATUS.OK,
+    );
   } catch (error) {
-    return sendError(res, 'Error fetching lessons', HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    return sendError(
+      res,
+      "Error fetching lessons",
+      HTTP_STATUS.INTERNAL_SERVER_ERROR,
+    );
   }
 };
