@@ -66,6 +66,8 @@ model enrollments {
   course_id   Int
   course      courses  @relation(fields: [course_id], references: [id])
   enrolled_at DateTime @default(now())
+
+  @@unique([student_id, course_id])
 }
 
 model exams {
