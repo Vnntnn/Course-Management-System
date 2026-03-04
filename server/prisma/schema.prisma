@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id            Int      @id @default(autoincrement())
+  full_name     String
+  email         String   @unique
+  password_hash String
+  role          String // student, instructor, admin
+  created_at    DateTime @default(now())
+
+  courses          courses[]
+  enrollments      enrollments[]
+  exam_results     exam_results[]
+  student_progress student_progress[]
+}
+
+model courses {
+  id            Int      @id @default(autoincrement())
+  instructor_id Int
+  instructor    users    @relation(fields: [instructor_id], references: [id])
+  title         String   @unique
+  description   String
+  thumbnail_url String
+  created_at    DateTime @default(now())
+
+  lessons     lessons[]
+  exams       exams[]
+  enrollments enrollments[]
+}
+
+model lessons {
+  id          Int     @id @default(autoincrement())
+  course_id   Int
+  course      courses @relation(fields: [course_id], references: [id])
+  title       String
+  order_index Int // lessons order within the course
+
+  topics topics[]
+}
+
+model topics {
+  id           Int     @id @default(autoincrement())
+  lesson_id    Int
+  lesson       lessons @relation(fields: [lesson_id], references: [id])
+  title        String
+  content_type String // text, video, code
+  content_body String
+  order_index  Int // Topic order within the lesson
+
+  student_progress student_progress[]
+}
+
+model enrollments {
+  id          Int      @id @default(autoincrement())
+  student_id  Int
+  student     users    @relation(fields: [student_id], references: [id])
+  course_id   Int
+  course      courses  @relation(fields: [course_id], references: [id])
+  enrolled_at DateTime @default(now())
+}
+
+model exams {
+  id              Int     @id @default(autoincrement())
+  course_id       Int
+  course          courses @relation(fields: [course_id], references: [id])
+  title           String
+  total_questions Int
+
+  questions    questions[]
+  exam_results exam_results[]
+}
+
+model questions {
+  id             Int    @id @default(autoincrement())
+  exam_id        Int
+  exam           exams  @relation(fields: [exam_id], references: [id])
+  question_text  String
+  option_a       String
+  option_b       String
+  option_c       String
+  option_d       String
+  correct_option String // A, B, C, D
+}
+
+model exam_results {
+  id         Int      @id @default(autoincrement())
+  student_id Int
+  student    users    @relation(fields: [student_id], references: [id])
+  exam_id    Int
+  exam       exams    @relation(fields: [exam_id], references: [id])
+  score      Float
+  taken_at   DateTime @default(now())
+}
+
+model student_progress {
+  id           Int       @id @default(autoincrement())
+  student_id   Int
+  student      users     @relation(fields: [student_id], references: [id])
+  topic_id     Int
+  topic        topics    @relation(fields: [topic_id], references: [id])
+  is_completed Boolean   @default(false)
+  completed_at DateTime?
+}
+
+model UserProgress {
+  id           Int      @id @default(autoincrement())
+  user_id      Int
+  topic_id     Int
+  completed_at DateTime @default(now())
+
+  user  users  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  topic topics @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, topic_id])
+}
