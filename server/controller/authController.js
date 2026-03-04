@@ -1,158 +1,144 @@
-const bcrypt = require("bcrypt");
-const prisma = require("../config/database");
+const authService = require("../services/authService");
+const passport = require("passport");
+const { sendResponse, sendError } = require("../utils/responseHelper");
+const { HTTP_STATUS, ROLES } = require("../utils/constants");
 
-/**
- * Register new user
- */
 exports.register = async (req, res) => {
   const { full_name, email, password, role } = req.body;
 
-  // Validation
   if (!full_name || !email || !password) {
-    return res.status(400).json({
-      message: "Full name, email and password are required",
-    });
+    return sendError(
+      res,
+      "Full name, email and password are required",
+      HTTP_STATUS.BAD_REQUEST,
+    );
   }
 
   if (password.length < 6) {
-    return res.status(400).json({
-      message: "Password must be at least 6 characters",
-    });
+    return sendError(
+      res,
+      "Password must be at least 6 characters",
+      HTTP_STATUS.BAD_REQUEST,
+    );
   }
 
-  if (role && role !== "student") {
-    return res.status(400).json({
-      message: "Public registration only allows 'student' role",
-    });
+  if (role && role !== ROLES.STUDENT) {
+    return sendError(
+      res,
+      "Public registration only allows 'student' role",
+      HTTP_STATUS.BAD_REQUEST,
+    );
   }
 
   try {
-    // Check if user already exists
-    const existingUser = await prisma.users.findUnique({
-      where: { email },
-    });
-
+    const existingUser = await authService.findUserByEmail(email);
     if (existingUser) {
-      return res.status(409).json({
-        message: "Email already registered",
-      });
+      return sendError(res, "Email already registered", HTTP_STATUS.CONFLICT);
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    // Create new user
-    const newUser = await prisma.users.create({
-      data: {
-        full_name,
-        email,
-        password_hash: hashedPassword,
-        role: role || "student",
-      },
+    const newUser = await authService.register({
+      full_name,
+      email,
+      password,
+      role,
     });
 
-    res.status(201).json({
-      message: "User registered successfully",
-      user: {
+    return sendResponse(
+      res,
+      {
         id: newUser.id,
         full_name: newUser.full_name,
         email: newUser.email,
         role: newUser.role,
       },
-    });
+      "User registered successfully",
+      HTTP_STATUS.CREATED,
+    );
   } catch (err) {
     console.error("Register error:", err);
-    res.status(500).json({
-      message: "Failed to register user",
-    });
+    return sendError(
+      res,
+      "Failed to register user",
+      HTTP_STATUS.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 
-/**
- * Login user
- */
 exports.login = (req, res, next) => {
-  const passport = require("passport");
-
   passport.authenticate("local", (err, user, info) => {
     if (err) {
       console.error("Login error:", err);
-      return res.status(500).json({
-        message: "An error occurred during login",
-      });
+      return sendError(
+        res,
+        "An error occurred during login",
+        HTTP_STATUS.INTERNAL_SERVER_ERROR,
+      );
     }
 
     if (!user) {
-      return res.status(401).json({
-        message: (info && info.message) || "Invalid credentials",
-      });
+      return sendError(
+        res,
+        (info && info.message) || "Invalid credentials",
+        HTTP_STATUS.UNAUTHORIZED,
+      );
     }
 
     req.logIn(user, (err) => {
       if (err) {
         console.error("Session error:", err);
-        return res.status(500).json({
-          message: "Failed to create session",
-        });
+        return sendError(
+          res,
+          "Failed to create session",
+          HTTP_STATUS.INTERNAL_SERVER_ERROR,
+        );
       }
 
-      return res.json({
-        message: "Login successful",
-        user: {
+      return sendResponse(
+        res,
+        {
           id: user.id,
           full_name: user.full_name,
           email: user.email,
           role: user.role,
         },
-      });
+        "Login successful",
+        HTTP_STATUS.OK,
+      );
     });
   })(req, res, next);
 };
 
-/**
- * Logout user
- */
 exports.logout = (req, res) => {
   req.logout((err) => {
     if (err) {
-      return res.status(500).json({
-        message: "Failed to logout",
-      });
+      return sendError(
+        res,
+        "Failed to logout",
+        HTTP_STATUS.INTERNAL_SERVER_ERROR,
+      );
     }
-
-    res.json({
-      message: "Logout successful",
-    });
+    return sendResponse(res, null, "Logout successful", HTTP_STATUS.OK);
   });
 };
 
-/**
- * Get current user profile
- */
 exports.getProfile = async (req, res) => {
   try {
-    const user = await prisma.users.findUnique({
-      where: { id: req.user.id },
-      select: {
-        id: true,
-        full_name: true,
-        email: true,
-        role: true,
-        created_at: true,
-      },
-    });
-
+    const user = await authService.findUserProfile(req.user.id);
     if (!user) {
-      return res.status(404).json({
-        message: "User not found",
-      });
+      return sendError(res, "User not found", HTTP_STATUS.NOT_FOUND);
     }
-
-    res.json(user);
+    return sendResponse(
+      res,
+      user,
+      "Profile fetched successfully",
+      HTTP_STATUS.OK,
+    );
   } catch (err) {
     console.error("Get profile error:", err);
-    res.status(500).json({
-      message: "Failed to get user profile",
-    });
+    return sendError(
+      res,
+      "Failed to get user profile",
+      HTTP_STATUS.INTERNAL_SERVER_ERROR,
+    );
   }
 };

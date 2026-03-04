@@ -4,7 +4,9 @@
  *
  */
 
-const prisma = require("../config/database");
+const courseService = require("../services/courseService");
+const { sendResponse, sendError } = require("../utils/responseHelper");
+const { HTTP_STATUS } = require("../utils/constants");
 
 /**
  * Create a new course
@@ -15,35 +17,68 @@ exports.createCourse = async (req, res) => {
     const { title, description, thumbnail_url } = req.body;
 
     if (!title || !description) {
-      return res
-        .status(400)
-        .json({ message: "Title and description are required" });
+      return sendError(
+        res,
+        "Title and description are required",
+        HTTP_STATUS.BAD_REQUEST,
+      );
     }
 
-    const newCourse = await prisma.courses.create({
-      data: {
-        title,
-        description,
-        thumbnail_url:
-          thumbnail_url ||
-          "https://dummyimage.com/600x400/ebebeb/000000&text=Course",
-        instructor_id: req.user.id,
-      },
+    const newCourse = await courseService.createCourse({
+      title,
+      description,
+      thumbnail_url,
+      instructorId: req.user.id,
     });
 
-    res
-      .status(201)
-      .json({ message: "Course created successfully", course: newCourse });
+    return sendResponse(
+      res,
+      newCourse,
+      "Course created successfully",
+      HTTP_STATUS.CREATED,
+    );
   } catch (error) {
-    // Prisma code for unique constraint violation (e.g., duplicate course title)
     if (error.code === "P2002") {
-      return res
-        .status(400)
-        .json({ message: "A course with this title already exists" });
+      return sendError(
+        res,
+        "A course with this title already exists",
+        HTTP_STATUS.BAD_REQUEST,
+      );
     }
-    res
-      .status(500)
-      .json({ message: "Failed to create course", error: error.message });
+    return sendError(
+      res,
+      "Failed to create course",
+      HTTP_STATUS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
+
+/**
+ * Get course by ID
+ * Publicly accessible (authenticated users only)
+ */
+exports.getCourseById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const course = await courseService.getCourseById(id);
+
+    if (!course) {
+      return sendError(res, "Course not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    return sendResponse(
+      res,
+      course,
+      "Course fetched successfully",
+      HTTP_STATUS.OK,
+    );
+  } catch (error) {
+    return sendError(
+      res,
+      "Failed to get course",
+      HTTP_STATUS.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 
@@ -53,21 +88,97 @@ exports.createCourse = async (req, res) => {
  */
 exports.getAllCourses = async (req, res) => {
   try {
-    const courses = await prisma.courses.findMany({
-      include: {
-        instructor: {
-          select: {
-            id: true,
-            full_name: true,
-            email: true,
-          },
-        },
-      },
-    });
-    res.json(courses);
+    const courses = await courseService.getAllCourses();
+    return sendResponse(
+      res,
+      courses,
+      "Courses fetched successfully",
+      HTTP_STATUS.OK,
+    );
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Failed to retrieve courses", error: error.message });
+    return sendError(
+      res,
+      "Failed to retrieve courses",
+      HTTP_STATUS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
+
+exports.updateCourse = async (req, res) => {
+  const { id } = req.params;
+  const { title, description, thumbnail_url } = req.body;
+
+  try {
+    // Check ownership first
+    const course = await courseService.getCourseById(id);
+    if (!course) {
+      return sendError(res, "Course not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    if (course.instructor_id !== req.user.id) {
+      return sendError(
+        res,
+        "Access denied. You do not own this course.",
+        HTTP_STATUS.FORBIDDEN,
+      );
+    }
+
+    const updated = await courseService.updateCourse(id, {
+      title,
+      description,
+      thumbnail_url,
+    });
+
+    return sendResponse(res, updated, "Course updated", HTTP_STATUS.OK);
+  } catch (error) {
+    return sendError(res, "Update course failed", HTTP_STATUS.FORBIDDEN);
+  }
+};
+
+exports.deleteCourse = async (req, res) => {
+  const { id } = req.params;
+  const { confirm_delete } = req.body;
+
+  try {
+    const courseId = parseInt(id);
+    const course = await courseService.getCourseWithEnrollmentCount(courseId);
+
+    if (!course) {
+      return sendError(res, "Course not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    // check ownership
+    if (course.instructor_id !== req.user.id) {
+      return sendError(
+        res,
+        "Access denied. You do not own this course.",
+        HTTP_STATUS.FORBIDDEN,
+      );
+    }
+
+    const studentCount = course._count.enrollments;
+
+    // if there are any enrolled student(s), you need to be confirmed to delete the course
+    if (studentCount > 0 && confirm_delete !== true) {
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
+        success: false,
+        message: `This course has ${studentCount} enrolled student(s). Are you sure you want to delete it?`,
+        requires_confirmation: true,
+      });
+    }
+
+    await courseService.deleteCourseWithEnrollments(courseId);
+    return sendResponse(
+      res,
+      null,
+      "Course deleted successfully",
+      HTTP_STATUS.OK,
+    );
+  } catch (error) {
+    return sendError(
+      res,
+      "Delete course failed",
+      HTTP_STATUS.INTERNAL_SERVER_ERROR,
+    );
   }
 };

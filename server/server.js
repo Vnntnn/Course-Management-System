@@ -39,6 +39,8 @@ app.get("/", (req, res) => {
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/courses", require("./routes/courseRoutes"));
+app.use("/api/content", require("./routes/contentRoutes"));
+app.use("/api/enrollments", require("./routes/enrollmentRoutes"));
 
 // Global Error Handler
 app.use((err, req, res, next) => {
