@@ -131,7 +131,23 @@ exports.updateCourse = async (req, res) => {
 
     return sendResponse(res, updated, "Course updated", HTTP_STATUS.OK);
   } catch (error) {
-    return sendError(res, "Update course failed", HTTP_STATUS.FORBIDDEN);
+    if (error.code === "P2002") {
+      return sendError(
+        res,
+        "A course with this title already exists",
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+
+    if (error.code === "P2025") {
+      return sendError(res, "Course not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    return sendError(
+      res,
+      "Update course failed",
+      HTTP_STATUS.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 
