@@ -1,3 +1,5 @@
+const { ROLES } = require("../utils/constants");
+
 /**
  * Authentication middleware
  */
@@ -32,7 +34,7 @@ exports.hasRole = (...roles) => {
   };
 };
 
-exports.isStudent = exports.hasRole("student");
-exports.isInstructor = exports.hasRole("instructor");
-exports.isAdmin = exports.hasRole("admin");
-exports.isInstructorOrAdmin = exports.hasRole("instructor", "admin");
+exports.isStudent = exports.hasRole(ROLES.STUDENT);
+exports.isInstructor = exports.hasRole(ROLES.INSTRUCTOR);
+exports.isAdmin = exports.hasRole(ROLES.ADMIN);
+exports.isInstructorOrAdmin = exports.hasRole(ROLES.INSTRUCTOR, ROLES.ADMIN);

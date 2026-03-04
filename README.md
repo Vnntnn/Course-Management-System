@@ -11,8 +11,9 @@ Project structure based on Three-Tier Layered Architecture.
 ```
 Course-Management-System/
 ├── 📂 server/
+│   ├── 📂 config/
 │   │   └── passport.js
-│   ├── 📂 controllers/
+│   ├── 📂 controller/
 │   ├── 📂 middleware/
 │   ├── 📂 prisma/
 │   │   ├── dev.db
@@ -22,6 +23,7 @@ Course-Management-System/
 │   ├── .env
 │   ├── server.js
 │   └── package.json
+```
 │
 ├── 📂 client/
 │   ├── 📂 public/

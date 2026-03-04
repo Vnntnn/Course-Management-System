@@ -1,5 +1,5 @@
 /**
- * This helper make avoid misspelling role and clean for codebase.
+ * Helper constants to avoid role typos and keep the codebase consistent.
  */
 
 module.exports = {

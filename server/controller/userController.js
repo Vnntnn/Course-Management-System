@@ -60,7 +60,14 @@ exports.updateUser = async (req, res) => {
     const user = await userService.updateUser(id, { full_name, role });
     return sendResponse(res, user, "User updated successfully", HTTP_STATUS.OK);
   } catch (error) {
-    return sendError(res, "Failed to update user", HTTP_STATUS.BAD_REQUEST);
+    if (error && error.code === "P2025") {
+      return sendError(res, "User not found", HTTP_STATUS.NOT_FOUND);
+    }
+    return sendError(
+      res,
+      "Failed to update user",
+      HTTP_STATUS.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 
