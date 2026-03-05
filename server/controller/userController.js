@@ -1,4 +1,5 @@
 const userService = require("../services/userService");
+const progressService = require("../services/progressService");
 const { sendResponse, sendError } = require("../utils/responseHelper");
 const { HTTP_STATUS } = require("../utils/constants");
 
@@ -75,5 +76,18 @@ exports.deleteUser = async (req, res) => {
     return sendResponse(res, null, "User deleted successfully", HTTP_STATUS.OK);
   } catch (error) {
     return sendError(res, "Failed to delete user", HTTP_STATUS.BAD_REQUEST);
+  }
+};
+
+exports.updateProgress = async (req, res) => {
+  const { topic_id, course_id } = req.body;
+  const userId = req.user.id;
+
+  try {
+    await progressService.markTopicComplete(userId, topic_id);
+    const currentProgress = await progressService.getCourseProgress(userId, course_id);
+    return sendResponse(res, null, "Progress updated successfully", HTTP_STATUS.OK, currentProgress);
+  } catch (error) {
+    return sendError(res, "Failed to update progress", HTTP_STATUS.BAD_REQUEST);
   }
 };
