@@ -18,14 +18,13 @@ model users {
   courses          courses[]
   enrollments      enrollments[]
   exam_results     exam_results[]
-  student_progress student_progress[]
   UserProgress     UserProgress[]
 }
 
 model courses {
   id            Int      @id @default(autoincrement())
   instructor_id Int
-  instructor    users    @relation(fields: [instructor_id], references: [id])
+  instructor    users    @relation(fields: [instructor_id], references: [id], onDelete: Cascade)
   title         String   @unique
   description   String
   thumbnail_url String
@@ -39,7 +38,7 @@ model courses {
 model lessons {
   id          Int     @id @default(autoincrement())
   course_id   Int
-  course      courses @relation(fields: [course_id], references: [id])
+  course      courses @relation(fields: [course_id], references: [id], onDelete: Cascade)
   title       String
   order_index Int // lessons order within the course
 
@@ -49,22 +48,21 @@ model lessons {
 model topics {
   id           Int     @id @default(autoincrement())
   lesson_id    Int
-  lesson       lessons @relation(fields: [lesson_id], references: [id])
+  lesson       lessons @relation(fields: [lesson_id], references: [id], onDelete: Cascade)
   title        String
   content_type String // text, video, code
   content_body String
   order_index  Int // Topic order within the lesson
 
-  student_progress student_progress[]
   UserProgress     UserProgress[]
 }
 
 model enrollments {
   id          Int      @id @default(autoincrement())
   student_id  Int
-  student     users    @relation(fields: [student_id], references: [id])
+  student     users    @relation(fields: [student_id], references: [id], onDelete: Cascade)
   course_id   Int
-  course      courses  @relation(fields: [course_id], references: [id])
+  course      courses  @relation(fields: [course_id], references: [id], onDelete: Cascade)
   enrolled_at DateTime @default(now())
 
   @@unique([student_id, course_id])
@@ -73,7 +71,7 @@ model enrollments {
 model exams {
   id              Int     @id @default(autoincrement())
   course_id       Int
-  course          courses @relation(fields: [course_id], references: [id])
+  course          courses @relation(fields: [course_id], references: [id], onDelete: Cascade)
   title           String
   total_questions Int
 
@@ -84,7 +82,7 @@ model exams {
 model questions {
   id             Int    @id @default(autoincrement())
   exam_id        Int
-  exam           exams  @relation(fields: [exam_id], references: [id])
+  exam           exams  @relation(fields: [exam_id], references: [id], onDelete: Cascade)
   question_text  String
   option_a       String
   option_b       String
@@ -96,21 +94,11 @@ model questions {
 model exam_results {
   id         Int      @id @default(autoincrement())
   student_id Int
-  student    users    @relation(fields: [student_id], references: [id])
+  student    users    @relation(fields: [student_id], references: [id], onDelete: Cascade)
   exam_id    Int
-  exam       exams    @relation(fields: [exam_id], references: [id])
+  exam       exams    @relation(fields: [exam_id], references: [id], onDelete: Cascade)
   score      Float
   taken_at   DateTime @default(now())
-}
-
-model student_progress {
-  id           Int       @id @default(autoincrement())
-  student_id   Int
-  student      users     @relation(fields: [student_id], references: [id])
-  topic_id     Int
-  topic        topics    @relation(fields: [topic_id], references: [id])
-  is_completed Boolean   @default(false)
-  completed_at DateTime?
 }
 
 model UserProgress {
