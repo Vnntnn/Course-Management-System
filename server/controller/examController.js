@@ -17,7 +17,6 @@ exports.createExam = async (req, res) => {
 
     const course = await courseService.getCourseById(course_id);
     if (!course) {
-      console.log("Course not found");
       return sendError(res, "Course not found", HTTP_STATUS.NOT_FOUND);
     }
 
