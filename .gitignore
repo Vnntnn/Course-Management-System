@@ -1,8 +1,12 @@
-<<<<<<< HEAD
-# Ignore environment variable files
+# Frontend
 .env
 .env.*
-=======
 design/
-ืnode_modules
->>>>>>> frontend
+/node_modules
+client/.vscode
+
+# Backend
+server/node_modules
+server/.env
+server/.env.*
+server/.vscode
