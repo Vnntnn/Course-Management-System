@@ -6,7 +6,7 @@ import chapter from '@/components/chapter.vue';
 </script>
 
 <template>
-    <main class="mt-24">
+    <main class="mt-24 mx-5">
         <h1>Chapter</h1>
         <Contentcontainer>
             <chapter/>
