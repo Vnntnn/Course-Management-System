@@ -5,6 +5,9 @@ import Login from '@/pages/login.vue'
 import Signin from '@/pages/signin.vue'
 import userdashboard from '@/pages/userdashboard.vue'
 import coursebrowser from '@/pages/browsecourse.vue'
+import coursepage from '@/pages/coursepage.vue'
+import Chapterlist from '@/pages/chapterlist.vue'
+import Chapterdetail from '@/pages/chapterdetail.vue'
 
 const routes = [
   {
@@ -26,6 +29,18 @@ const routes = [
   {
     path: '/coursebrowser',
     component: coursebrowser
+  },
+  {
+    path: '/course',
+    component: coursepage
+  },
+  {
+    path: '/chapterlist',
+    component: Chapterlist
+  },
+  {
+    path: '/details',
+    component: Chapterdetail
   }
 ]
 
