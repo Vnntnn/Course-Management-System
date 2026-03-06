@@ -1,12 +1,9 @@
 /**
- *
- * Helper functions that send API back to frontend
+ * Sends a successful API response to the client
  * @param {Object} res - Express response object
- * @param {number} statusCode - HTTP status code to send
- * @param {boolean} success - If the operation was successful
+ * @param {Object|null} data - Optional data to include in the response
  * @param {string} message - A message describing the result of the operation
- * @param {Object|null} data - Optional additional data to include in the response
- *
+ * @param {number} statusCode - HTTP status code to send (default: 200)
  */
 
 const sendResponse = (
