@@ -98,10 +98,9 @@ exports.updateProgress = async (req, res) => {
     );
     return sendResponse(
       res,
-      null,
-      "Progress updated successfully",
-      HTTP_STATUS.OK,
       currentProgress,
+      "Progress updated successfully",
+      HTTP_STATUS.OK
     );
   } catch (error) {
     return sendError(res, "Failed to update progress", HTTP_STATUS.BAD_REQUEST);
