@@ -15,10 +15,6 @@ router
   .delete(ensureAuthenticated, isAdmin, userController.deleteUser);
 
 // User upload course/content image (instructors only)
-router.post('/upload', ensureAuthenticated, isInstructor, upload.single('image'), (req, res) => {
-  if (!req.file) { return sendError(res, "Please upload an image", 400, false) };
-  const imageUrl = `/uploads/${req.file.filename}`;
-  return sendResponse(res, 201, true, "Image uploaded successfully", { url: imageUrl });
-})
+// removed
 
 module.exports = router;
