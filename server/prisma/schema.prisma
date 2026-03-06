@@ -15,10 +15,10 @@ model users {
   role          String // student, instructor, admin
   created_at    DateTime @default(now())
 
-  courses          courses[]
-  enrollments      enrollments[]
-  exam_results     exam_results[]
-  UserProgress     UserProgress[]
+  courses      courses[]
+  enrollments  enrollments[]
+  exam_results exam_results[]
+  UserProgress UserProgress[]
 }
 
 model courses {
@@ -54,7 +54,7 @@ model topics {
   content_body String
   order_index  Int // Topic order within the lesson
 
-  UserProgress     UserProgress[]
+  UserProgress UserProgress[]
 }
 
 model enrollments {

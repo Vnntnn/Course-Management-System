@@ -85,8 +85,17 @@ exports.updateProgress = async (req, res) => {
 
   try {
     await progressService.markTopicComplete(userId, topic_id);
-    const currentProgress = await progressService.getCourseProgress(userId, course_id);
-    return sendResponse(res, null, "Progress updated successfully", HTTP_STATUS.OK, currentProgress);
+    const currentProgress = await progressService.getCourseProgress(
+      userId,
+      course_id,
+    );
+    return sendResponse(
+      res,
+      null,
+      "Progress updated successfully",
+      HTTP_STATUS.OK,
+      currentProgress,
+    );
   } catch (error) {
     return sendError(res, "Failed to update progress", HTTP_STATUS.BAD_REQUEST);
   }
