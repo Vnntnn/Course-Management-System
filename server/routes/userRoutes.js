@@ -5,6 +5,7 @@ const { ensureAuthenticated, isAdmin } = require("../middleware/auth");
 
 // Only admins can view all users
 router.route("/").get(ensureAuthenticated, isAdmin, userController.getAllUsers);
+router.post("/progress", ensureAuthenticated, userController.updateProgress);
 
 router
   .route("/:id")

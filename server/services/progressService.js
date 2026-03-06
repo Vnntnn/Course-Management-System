@@ -2,19 +2,18 @@ const prisma = require('../config/database');
 
 class ProgressService {
     async markTopicComplete(userId, topicId) {
-        return await prisma.UserProgress.upsert({
+        return await prisma.userProgress.upsert({
             where: {
                 user_id_topic_id: {
-                    user_id: parseInt(userId),
-                    topic_id: parseInt(topicId),
+                    user_id: parseInt(userId, 10),
+                    topic_id: parseInt(topicId, 10),
                 },
 
             },
-            update: {
-            },
+            update: {},
             create: {
-                user_id: parseInt(userId),
-                topic_id: parseInt(topicId),
+                user_id: parseInt(userId, 10),
+                topic_id: parseInt(topicId, 10),
             }
         })
     }
@@ -23,17 +22,17 @@ class ProgressService {
         const totalTopics = await prisma.topics.count({
             where: {
                 lesson: {
-                    course_id: parseInt(courseId),
+                    course_id: parseInt(courseId, 10),
                 },
             },
         });
 
-        const completeTopics = await prisma.UserProgress.count({
+        const completedTopics = await prisma.userProgress.count({
             where: {
-                user_id: parseInt(userId),
+                user_id: parseInt(userId, 10),
                 topic: {
                     lesson: {
-                        course_id: parseInt(courseId),
+                        course_id: parseInt(courseId, 10),
                     },
                 },
             },

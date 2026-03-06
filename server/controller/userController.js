@@ -90,10 +90,43 @@ exports.updateProgress = async (req, res) => {
   const { topic_id, course_id } = req.body;
   const userId = req.user.id;
 
-  try {
-    await progressService.markTopicComplete(userId, topic_id);
-    const currentProgress = await progressService.getCourseProgress(userId, course_id);
-    return sendResponse(res, null, "Progress updated successfully", HTTP_STATUS.OK, currentProgress);
+  if (topic_id == null) {  
+    return sendError(res, "topic_id is required", HTTP_STATUS.BAD_REQUEST);  
+  }  
+
+  if (course_id == null) {  
+    return sendError(res, "course_id is required", HTTP_STATUS.BAD_REQUEST);  
+  }  
+
+  const topicIdNum = Number(topic_id);  
+  const courseIdNum = Number(course_id);  
+
+  if (!Number.isInteger(topicIdNum) || topicIdNum <= 0) {  
+    return sendError(  
+      res,  
+      "topic_id must be a positive integer",  
+      HTTP_STATUS.BAD_REQUEST,  
+    );  
+  }  
+
+  if (!Number.isInteger(courseIdNum) || courseIdNum <= 0) {  
+    return sendError(  
+      res,  
+      "course_id must be a positive integer",  
+      HTTP_STATUS.BAD_REQUEST,  
+    );  
+  }
+
+  try {  
+    await progressService.markTopicComplete(userId, topicIdNum);  
+    const currentProgress = await progressService.getCourseProgress(userId, courseIdNum);  
+    return sendResponse(  
+      res,  
+      null,  
+      "Progress updated successfully",  
+      HTTP_STATUS.OK,  
+      currentProgress,  
+    );
   } catch (error) {
     return sendError(res, "Failed to update progress", HTTP_STATUS.BAD_REQUEST);
   }
