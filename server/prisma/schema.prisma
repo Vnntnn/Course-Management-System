@@ -18,7 +18,6 @@ model users {
   courses          courses[]
   enrollments      enrollments[]
   exam_results     exam_results[]
-  student_progress student_progress[]
   UserProgress     UserProgress[]
 }
 
@@ -55,7 +54,6 @@ model topics {
   content_body String
   order_index  Int // Topic order within the lesson
 
-  student_progress student_progress[]
   UserProgress     UserProgress[]
 }
 
@@ -101,16 +99,6 @@ model exam_results {
   exam       exams    @relation(fields: [exam_id], references: [id])
   score      Float
   taken_at   DateTime @default(now())
-}
-
-model student_progress {
-  id           Int       @id @default(autoincrement())
-  student_id   Int
-  student      users     @relation(fields: [student_id], references: [id])
-  topic_id     Int
-  topic        topics    @relation(fields: [topic_id], references: [id])
-  is_completed Boolean   @default(false)
-  completed_at DateTime?
 }
 
 model UserProgress {
