@@ -6,6 +6,14 @@ const { HTTP_STATUS } = require("../utils/constants");
 exports.createLesson = async (req, res) => {
   const { course_id, title } = req.body;
 
+  if (!course_id || !title) {
+    return sendError(
+      res,
+      "Course ID and title are required",
+      HTTP_STATUS.BAD_REQUEST,
+    );
+  }
+
   try {
     const course = await courseService.getCourseById(course_id);
 
@@ -39,6 +47,14 @@ exports.createLesson = async (req, res) => {
 
 exports.createTopic = async (req, res) => {
   const { lesson_id, title, content_body, content_type } = req.body;
+
+  if (!lesson_id || !title || !content_body || !content_type) {
+    return sendError(
+      res,
+      "Lesson ID, title, content body and content type are required",
+      HTTP_STATUS.BAD_REQUEST,
+    );
+  }
 
   try {
     const lesson = await contentService.getLessonByIdWithCourse(lesson_id);
