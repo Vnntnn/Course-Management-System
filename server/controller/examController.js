@@ -4,9 +4,9 @@ const { sendResponse, sendError } = require("../utils/responseHelper");
 const { HTTP_STATUS } = require("../utils/constants");
 
 exports.createExam = async (req, res) => {
-  console.log("createExam hit. Body: ", req.body);
   const { course_id, title, total_questions } = req.body;
   try {
+    if (!course_id || !title) {
     if (!course_id || !title) {
       return sendError(
         res,
