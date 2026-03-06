@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const session = require("express-session");
 const passport = require("passport");
 const prisma = require("./config/database");
+const path = require("path");
 
 dotenv.config();
 
@@ -34,6 +35,9 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Static resource
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Routes definitions
 app.get("/", (req, res) => {
   res.json({ message: "Course Management System API" });
@@ -46,6 +50,7 @@ app.use("/api/courses", require("./routes/courseRoutes"));
 app.use("/api/content", require("./routes/contentRoutes"));
 app.use("/api/enrollments", require("./routes/enrollmentRoutes"));
 app.use("/api/exams", require("./routes/examRoutes"));
+app.use('/api/upload', require('./routes/uploadRoutes'));
 
 // Global Error Handler
 app.use((err, req, res, next) => {
@@ -65,3 +70,5 @@ process.on("SIGINT", async () => {
   await prisma.$disconnect();
   process.exit(0);
 });
+
+module.exports = app;
