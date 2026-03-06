@@ -7,7 +7,6 @@ exports.createExam = async (req, res) => {
   const { course_id, title, total_questions } = req.body;
   try {
     if (!course_id || !title) {
-    if (!course_id || !title) {
       return sendError(
         res,
         "course_id and title are required.",
