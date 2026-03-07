@@ -7,6 +7,7 @@ import { theme } from '@/utils/theme';
 import { computed } from 'vue';
 import Button from '@/assets/button.vue';
 import inputtext from '@/assets/inputtext.vue';
+import course_enrolled from '@/components/course_enrolled.vue';
 
 const props = defineProps({
     username : {
@@ -38,19 +39,26 @@ const emailClass = computed(() => {
 
     <section class="space-y-5">
         <h1 class="font-bold text-4xl">My Course</h1>
-        <contentcontainer class="h-screen ">
+        <contentcontainer class="h-screen">
             <div class="flex justify-center space-x-2">
                 <inputtext input_type="text" input_placeholder="Search Course"/>
                 <Button type="button" size="small_squared" variant="primary_border">
                     <HugeiconsIcon :icon="icons.Search02Icon"/>
                 </Button>
             </div>
-            <div class="flex justify-center items-center flex-col gap-2 text-text-400 h-full">
+            <!-- if there are no courses -->
+            <div class="hidden justify-center items-center flex-col gap-2 text-text-400 h-full">
                 You haven't enrolled into any course yet.
                 <Button variant="primary_border" @click="go('/coursebrowser')" class="flex gap-2">
                     <HugeiconsIcon :icon="icons.Search02Icon"/>
                     Browse Course
                 </Button>
+            </div>
+            <div>
+                <div class="grid grid-cols-4 sm:grid-cols-2 md:grid-cols-2 gap-4">
+                    <course_enrolled/>
+                </div>
+                <Button @click="go('/coursebrowser')">Find more course</Button>
             </div>
         </contentcontainer>
     </section>

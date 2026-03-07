@@ -18,9 +18,9 @@ import course from "@/components/course.vue";
                 <Button variant="primary_border" size="small_squared" class="flex gap-2"><HugeiconsIcon :icon="icons.Search02Icon"/>Search</Button>
             </div>
             <div id="courselist" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <course></course>
-                <course></course>
-                <course></course>
+                <course coursename="Blender 3D Crash course" coursedesc="Learn Blender 3D from Scratch from Modeling, texturing, and Rendering"/>
+                <course/>
+                <course/>
             </div>
         </Contentcontainer>
     </main>
