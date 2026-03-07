@@ -1,6 +1,6 @@
 const LocalStrategy = require("passport-local").Strategy;
 const prisma = require("./database");
-const bcryptjs = require("bcryptjs");
+const bcrypt = require("bcrypt");
 
 module.exports = function (passport) {
   // Local strategy configuration
@@ -17,7 +17,7 @@ module.exports = function (passport) {
             });
           }
 
-          const isMatch = await bcryptjs.compare(password, user.password_hash);
+          const isMatch = await bcrypt.compare(password, user.password_hash);
 
           if (!isMatch) {
             return done(null, false, {

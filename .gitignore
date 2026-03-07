@@ -4,6 +4,7 @@
 design/
 /node_modules
 client/.vscode
+client/dist
 
 # Backend
 server/node_modules

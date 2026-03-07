@@ -1,5 +1,5 @@
 const prisma = require("../config/database");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const { ROLES } = require("../utils/constants");
 
 class AuthService {

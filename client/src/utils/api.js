@@ -1,0 +1,90 @@
+// Simple fetch wrapper for API calls
+const apiFetch = async (url, options = {}) => {
+  const response = await fetch(url, {
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+    ...options,
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      console.warn('Unauthorized');
+    }
+    const error = new Error(`HTTP error! status: ${response.status}`);
+    error.response = response;
+    throw error;
+  }
+
+  return response.json();
+};
+
+// AUTH ENDPOINTS
+export const authAPI = {
+  register: (data) => apiFetch('/api/auth/register', { method: 'POST', body: JSON.stringify(data) }),
+  login: (data) => apiFetch('/api/auth/login', { method: 'POST', body: JSON.stringify(data) }),
+  logout: () => apiFetch('/api/auth/logout', { method: 'POST' }),
+  me: () => apiFetch('/api/auth/me'),
+};
+
+// USER ENDPOINTS
+export const userAPI = {
+  getAll: () => apiFetch('/api/users'),
+  getById: (id) => apiFetch(`/api/users/${id}`),
+  update: (id, data) => apiFetch(`/api/users/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  delete: (id) => apiFetch(`/api/users/${id}`, { method: 'DELETE' }),
+  updateProgress: (data) => apiFetch('/api/users/progress', { method: 'POST', body: JSON.stringify(data) }),
+};
+
+// COURSE ENDPOINTS
+export const courseAPI = {
+  getAll: () => apiFetch('/api/courses'),
+  getById: (id) => apiFetch(`/api/courses/${id}`),
+  create: (data) => apiFetch('/api/courses/create', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id, data) => apiFetch(`/api/courses/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  delete: (id) => apiFetch(`/api/courses/${id}`, { method: 'DELETE' }),
+  getByInstructor: (instructorId) => apiFetch(`/api/courses/instructor/${instructorId}`),
+};
+
+// CONTENT ENDPOINTS
+export const contentAPI = {
+  createLesson: (data) => apiFetch('/api/content/lesson', { method: 'POST', body: JSON.stringify(data) }),
+  createTopic: (data) => apiFetch('/api/content/topic', { method: 'POST', body: JSON.stringify(data) }),
+  getCourseLessons: (courseId) => apiFetch(`/api/content/course/${courseId}`),
+  getLessonTopics: (lessonId) => apiFetch(`/api/content/lesson/${lessonId}`),
+};
+
+// ENROLLMENT ENDPOINTS
+export const enrollmentAPI = {
+  enroll: (data) => apiFetch('/api/enrollments/enroll', { method: 'POST', body: JSON.stringify(data) }),
+  getStudentCourses: () => apiFetch('/api/enrollments/my-courses'),
+  getCourseStudents: (courseId) => apiFetch(`/api/enrollments/courses/${courseId}/students`),
+  getStudentEnrollments: (studentId) => apiFetch(`/api/enrollments/student/${studentId}`),
+};
+
+// EXAM ENDPOINTS
+export const examAPI = {
+  create: (data) => apiFetch('/api/exams/create', { method: 'POST', body: JSON.stringify(data) }),
+  addQuestion: (data) => apiFetch('/api/exams/question', { method: 'POST', body: JSON.stringify(data) }),
+  getById: (id) => apiFetch(`/api/exams/${id}`),
+  submit: (data) => apiFetch('/api/exams/submit', { method: 'POST', body: JSON.stringify(data) }),
+  getResults: () => apiFetch('/api/exams/my-results'),
+  getResultById: (id) => apiFetch(`/api/exams/results/${id}`),
+};
+
+// UPLOAD ENDPOINTS
+export const uploadAPI = {
+  uploadImage: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      credentials: 'include',
+      body: formData,
+    });
+    if (!response.ok) throw new Error(`Upload failed: ${response.status}`);
+    return response.json();
+  },
+};

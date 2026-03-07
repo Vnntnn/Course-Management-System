@@ -4,16 +4,21 @@ import { HugeiconsIcon } from '@hugeicons/vue'
 import * as icons from '@hugeicons/core-free-icons/index'
 
 const props = defineProps({
+    modelValue: {
+        type: String,
+        default: ''
+    },
     input_type: {
         type: String,
         default: 'text'
     },
-
     input_placeholder: {
         type: String,
         default: ''
     }
 })
+
+const emit = defineEmits(['update:modelValue'])
 
 const showPassword = ref(false)
 
@@ -22,6 +27,10 @@ const inputtype = computed(() =>
         ? (showPassword.value ? 'text' : 'password')
         : props.input_type
 )
+
+const handleInput = (event) => {
+    emit('update:modelValue', event.target.value)
+}
 </script>
 
 <template>
@@ -31,6 +40,8 @@ const inputtype = computed(() =>
     <input
         :type="inputtype"
         :placeholder="input_placeholder"
+        :value="modelValue"
+        @input="handleInput"
         class="font-semibold text-text-400 px-2 py-1 pr-12 border rounded w-full"
     />
 
