@@ -5,6 +5,7 @@ const session = require("express-session");
 const passport = require("passport");
 const prisma = require("./config/database");
 const path = require("path");
+const crypto = require("crypto");
 
 dotenv.config();
 
@@ -17,10 +18,11 @@ app.use(cors({ credentials: true, origin: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Session middleware
+// Session middleware - auto-generate secret if not provided
+const SESSION_SECRET = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
 app.use(
   session({
-    secret: process.env.SESSION_SECRET,
+    secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: { secure: false },
