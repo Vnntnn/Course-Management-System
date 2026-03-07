@@ -20,6 +20,10 @@ if ! command -v npm &> /dev/null; then
     exit 1
 fi
 
+# Get the directory where this script is located and go to project root
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "$SCRIPT_DIR/../.."
+
 echo "[1/4] Building frontend..."
 cd client
 npm install

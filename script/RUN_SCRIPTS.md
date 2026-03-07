@@ -5,8 +5,14 @@ This project includes convenient scripts to build and run the application.
 ## Windows Users
 
 ### Option 1: Production Build
-Run the project with a complete production build:
+Run from **anywhere**:
 ```cmd
+.\script\production\run.bat
+```
+
+Or navigate to the script folder:
+```cmd
+cd script\production
 run.bat
 ```
 
@@ -17,29 +23,36 @@ This will:
 4. Start the production server on `http://localhost:5000`
 
 ### Option 2: Development Mode
+Run from **anywhere**:
 ```cmd
-run-dev.bat
+.\script\development\run-dev.bat
 ```
 
-Same as production build but with live reload capabilities.
+Or navigate to the script folder:
+```cmd
+cd script\development
+run-dev.bat
+```
 
 ---
 
 ## Mac / Linux / Unix Users
 
 ### Option 1: Production Build
-Run the project with a complete production build:
-```bash
-./run.sh
-```
 
 First time only, make the script executable:
 ```bash
-chmod +x run.sh
+chmod +x script/production/run.sh
 ```
 
-Then run:
+Then run from **anywhere**:
 ```bash
+./script/production/run.sh
+```
+
+Or navigate to the script folder:
+```bash
+cd script/production
 ./run.sh
 ```
 
@@ -50,17 +63,20 @@ This will:
 4. Start the production server on `http://localhost:5000`
 
 ### Option 2: Development Mode
-```bash
-./run-dev.sh
-```
 
 First time only, make the script executable:
 ```bash
-chmod +x run-dev.sh
+chmod +x script/development/run-dev.sh
 ```
 
-Then run:
+Then run from **anywhere**:
 ```bash
+./script/development/run-dev.sh
+```
+
+Or navigate to the script folder:
+```bash
+cd script/development
 ./run-dev.sh
 ```
 

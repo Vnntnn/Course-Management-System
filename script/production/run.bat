@@ -14,6 +14,10 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
+REM Go to project root directory
+cd /d "%~dp0"
+cd ..\..
+
 echo [1/4] Building frontend...
 cd client
 call npm install
