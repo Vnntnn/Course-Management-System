@@ -19,6 +19,14 @@ REM Go to project root directory
 cd /d "%~dp0"
 cd ..\..
 
+REM Create .env file if it doesn't exist
+if not exist server\.env (
+    echo Creating .env file in server folder...
+    echo DATABASE_URL="file:./dev.db" > server\.env
+    echo .env file created successfully!
+    echo.
+)
+
 echo [1/3] Building frontend...
 cd client
 call npm install
@@ -48,9 +56,7 @@ timeout /t 1 >nul
 echo.
 echo ========================================
 echo Dev Server starting on http://localhost:5000
+echo Press Ctrl+C to stop the server
 echo ========================================
-echo Press Ctrl+C to stop
 echo.
 call npm start
-
-pause

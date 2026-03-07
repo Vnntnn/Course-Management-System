@@ -14,10 +14,10 @@ exports.register = async (req, res) => {
     );
   }
 
-  if (password.length < 6) {
+  if (password.length <= 8 || password.length >= 20) {
     return sendError(
       res,
-      "Password must be at least 6 characters",
+      "Password must be between 8 and 20 characters",
       HTTP_STATUS.BAD_REQUEST,
     );
   }

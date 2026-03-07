@@ -24,6 +24,16 @@ fi
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$SCRIPT_DIR/../.."
 
+# Create .env file if it doesn't exist
+if [ ! -f server/.env ]; then
+    echo "Creating .env file in server folder..."
+    cat > server/.env << EOF
+DATABASE_URL="file:./dev.db"
+EOF
+    echo ".env file created successfully!"
+    echo ""
+fi
+
 echo "[1/4] Building frontend..."
 cd client
 npm install

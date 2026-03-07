@@ -13,8 +13,20 @@ const apiFetch = async (url, options = {}) => {
     if (response.status === 401) {
       console.warn('Unauthorized');
     }
-    const error = new Error(`HTTP error! status: ${response.status}`);
+
+    let errorMessage = `HTTP error! status: ${response.status}`;
+    try {
+      const errorData = await response.json();
+      if (errorData.message) {
+        errorMessage = errorData.message;
+      }
+    } catch (e) {
+      // If can't parse JSON, use default message
+    }
+    
+    const error = new Error(errorMessage);
     error.response = response;
+    error.status = response.status;
     throw error;
   }
 
