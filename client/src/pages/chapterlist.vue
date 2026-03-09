@@ -4,7 +4,7 @@ import * as icons from '@hugeicons/core-free-icons'
 import Contentcontainer from '@/assets/contentcontainer.vue';
 import chapter from '@/components/chapter.vue';
 import Button from '@/assets/button.vue';
-import { go } from '@/utils/navigation';
+import { goBack } from '@/utils/navigation';
 </script>
 
 <template>
