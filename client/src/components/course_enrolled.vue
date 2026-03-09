@@ -4,6 +4,7 @@ import * as icons from '@hugeicons/core-free-icons'
 import Button from '@/assets/button.vue';
 import { go } from '@/utils/navigation';
 import { Type } from '@hugeicons/core-free-icons/index';
+import { computed } from 'vue';
 
 
 const props = defineProps({
@@ -21,20 +22,38 @@ const props = defineProps({
     },
     progress : {
         Type: String,
-        default: '30%'
+        default: '0'
     }
 });
+
+
+const progressBtn = computed(() => {
+    let statusOfBtn = 'Start'
+    if(parseInt(props.progress) == 0){
+        statusOfBtn = 'Start'
+    }
+    else if(parseInt(props.progress) == 100){
+        statusOfBtn = 'Done'
+    }
+    else {
+        statusOfBtn = 'Continue'
+    }
+
+    return statusOfBtn;
+})
 </script>
 
 <template>
-    <div class="bg-bg-dark-1 p-4 rounded-xl space-y-2">
-        <img :src="thumbnail" alt="">
-        <h1 class="text-xl font-bold">{{ coursename }}</h1>
-        <p class="flex gap-2"><HugeiconsIcon :icon="icons.User"/>{{ instructorname }}</p>
-        <p>Progress:<span>{{ progress }}</span></p>
-        <div id="progressbar" class="bg-gray-400 w-50 h-2 rounded-full">
-            <div class="bg-linear-to-r from-link to-link-light h-full rounded-full" :style="{ width: progress }"></div>
+    <div class="bg-ci-secondary-1 rounded-xl hover:ring-2 ring-ci-secondary-3">
+        <img :src="thumbnail" alt="" class="rounded-t-xl w-full h-50 object-cover object-center">
+        <div class="p-4 space-y-2">
+            <h1 class="text-xl font-bold">{{ coursename }}</h1>
+            <p class="flex gap-2"><HugeiconsIcon :icon="icons.User"/>{{ instructorname }}</p>
+            <p class="flex gap-2">Progress:<span>{{ `${progress}%` }}</span></p>
+            <div id="progressbar" class="bg-gray-400 w-full h-3 rounded-full">
+                <div class="bg-linear-to-r from-link to-link-light h-full rounded-full" :style="{ width: `${progress}%` }"></div>
+            </div>
+            <Button @click="go('/chapterlist')">{{ progressBtn }}</Button>
         </div>
-        <Button @click="go('/chapterlist')">Continue</Button>
     </div>
 </template>

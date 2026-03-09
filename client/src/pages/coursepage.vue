@@ -3,10 +3,13 @@ import { HugeiconsIcon } from '@hugeicons/vue';
 import * as icons from '@hugeicons/core-free-icons/index'
 import Button from '@/assets/button.vue';
 import { go } from '@/utils/navigation';
+import { goBack } from '@/utils/navigation';
 </script>
 
 <template>
     <main class="mt-24 px-5">
+        <Button @click="goBack()" variant="primary_border">Go Back</Button>
+
         <Button> <!-- Haven't enrolled yet -->
             <HugeiconsIcon :icon="icons.Book"/>
             Enroll

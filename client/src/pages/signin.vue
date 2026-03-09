@@ -3,13 +3,13 @@ import { HugeiconsIcon } from '@hugeicons/vue';
 import * as icons from '@hugeicons/core-free-icons/index'
 import Button from '@/assets/button.vue';
 import inputtext from '@/assets/inputtext.vue';
-import { go } from '@/utils/navigation';
+import { go, goBack } from '@/utils/navigation';
 </script>
 
 <template>
 
     <main class="flex items-center justify-center min-h-screen flex-col">
-        <Button variant="primary_border" class="fixed top-24 left-4 flex gap-2" @click="go('/')">
+        <Button variant="primary_border" class="fixed top-24 left-4 flex gap-2" @click="goBack()">
             <HugeiconsIcon :icon="icons.Home03Icon"/>
             Back to homepage
         </Button>

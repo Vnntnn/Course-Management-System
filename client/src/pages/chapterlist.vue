@@ -9,7 +9,7 @@ import { go } from '@/utils/navigation';
 
 <template>
     <main class="mt-24 mx-5">
-        <Button variant="primary_border" @click="go('/user')">
+        <Button variant="primary_border" @click="goBack()">
             Back to Course List
         </Button>
         <h1 class="text-4xl font-bold p-5">Lessons</h1>

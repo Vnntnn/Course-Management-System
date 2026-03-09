@@ -39,7 +39,7 @@ const emailClass = computed(() => {
 
     <section class="space-y-5">
         <h1 class="font-bold text-4xl">My Course</h1>
-        <contentcontainer class="h-screen">
+        <contentcontainer class="h-auto">
             <div class="flex justify-center space-x-2">
                 <inputtext input_type="text" input_placeholder="Search Course"/>
                 <Button type="button" size="small_squared" variant="primary_border">
@@ -55,10 +55,15 @@ const emailClass = computed(() => {
                 </Button>
             </div>
             <div>
-                <div class="grid grid-cols-4 sm:grid-cols-2 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-6">
+                    <course_enrolled coursename="Blender 3D Basics" instructorname="Mstxz" progress="100"/>
+                    <course_enrolled progress="20"/>
+                    <course_enrolled/>
                     <course_enrolled/>
                 </div>
-                <Button @click="go('/coursebrowser')">Find more course</Button>
+                <div class="flex justify-center p-10">
+                    <Button @click="go('/coursebrowser')" variant="primary_border" class="flex gap-2">Find More Course<HugeiconsIcon :icon="icons.Book02Icon"/></Button>
+                </div>
             </div>
         </contentcontainer>
     </section>
