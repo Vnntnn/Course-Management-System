@@ -29,6 +29,7 @@ const classes = computed(() => {
                 <smallbutton variant="primary_border" @click="go('/login')">Log In</smallbutton>
             </div>
             <div> <!-- Has Account -->
+                <smallbutton variant="primary_border" @click="go('/coursebrowser')"></smallbutton>
                 <smallbutton variant="primary_border" size="small_squared" @click="go('/user')"><HugeiconsIcon :icon="icons.UserIcon"/></smallbutton>
             </div>
             <smallbutton variant="primary_border" @click="toggleTheme()">
