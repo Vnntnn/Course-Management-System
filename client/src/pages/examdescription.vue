@@ -1,16 +1,22 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import Contentcontainer from '@/assets/contentcontainer.vue';
 import Button from '@/assets/button.vue';
 import { go, goBack } from '@/utils/navigation';
-import { examAPI } from '@/utils/api'
+import { examAPI, enrollmentAPI } from '@/utils/api'
+import { useAuth } from '@/utils/auth'
 
 const params = new URLSearchParams(window.location.search)
 const examId = params.get('examId')
 
+const { currentUser } = useAuth()
+const role = computed(() => currentUser.value?.role || 'student')
+
 const exam = ref(null)
 const isLoading = ref(false)
 const error = ref('')
+const isEnrolled = ref(false)
+const enrollChecked = ref(false)
 
 const fetchExam = async () => {
     if (!examId) return
@@ -19,13 +25,32 @@ const fetchExam = async () => {
         const res = await examAPI.getById(examId)
         exam.value = res.data
     } catch (err) {
-        error.value = err.message || 'Failed to load exam'
+        // Backend returns 403 if not enrolled
+        if (err.status === 403) {
+            isEnrolled.value = false
+            enrollChecked.value = true
+            error.value = ''
+        } else {
+            error.value = err.message || 'Failed to load exam'
+        }
     } finally {
         isLoading.value = false
     }
 }
 
-onMounted(fetchExam)
+onMounted(async () => {
+    // Instructors always have access
+    if (role.value === 'instructor') {
+        isEnrolled.value = true
+        enrollChecked.value = true
+    }
+    await fetchExam()
+    // If we got exam data, we're enrolled
+    if (exam.value) {
+        isEnrolled.value = true
+        enrollChecked.value = true
+    }
+})
 </script>
 
 <template>
@@ -34,6 +59,15 @@ onMounted(fetchExam)
 
         <div v-if="isLoading" class="text-text-400 text-center py-8">Loading exam...</div>
         <div v-if="error" class="text-red-500 text-center py-4">{{ error }}</div>
+
+        <!-- Not enrolled guard -->
+        <Contentcontainer v-if="enrollChecked && !isEnrolled" class="text-center py-12 space-y-4">
+            <h2 class="text-2xl font-bold">🔒 Enrollment Required</h2>
+            <p class="text-text-400">You must enroll in this course before taking exams.</p>
+            <Button @click="go('/coursebrowser')">
+                Browse Courses
+            </Button>
+        </Contentcontainer>
 
         <Contentcontainer v-if="exam" class="flex justify-center items-center flex-col h-auto p-20">
             <h1 class="text-4xl font-bold">{{ exam.title }}</h1>

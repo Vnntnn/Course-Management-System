@@ -6,7 +6,7 @@ import Exam from '@/components/exam.vue'
 import { goBack, go } from '@/utils/navigation'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import * as icons from '@hugeicons/core-free-icons'
-import { courseAPI } from '@/utils/api'
+import { courseAPI, enrollmentAPI } from '@/utils/api'
 import { useAuth } from '@/utils/auth'
 
 const params = new URLSearchParams(window.location.search)
@@ -18,6 +18,24 @@ const role = computed(() => currentUser.value?.role || 'student')
 const exams = ref([])
 const isLoading = ref(false)
 const error = ref('')
+const isEnrolled = ref(false)
+const enrollChecked = ref(false)
+
+const checkAccess = async () => {
+    if (role.value === 'instructor') {
+        isEnrolled.value = true
+        enrollChecked.value = true
+        return
+    }
+    if (!courseId) return
+    try {
+        const res = await enrollmentAPI.checkEnrollment(courseId)
+        isEnrolled.value = res.data?.enrolled === true
+    } catch {
+        isEnrolled.value = false
+    }
+    enrollChecked.value = true
+}
 
 const fetchExams = async () => {
     if (!courseId) return
@@ -32,7 +50,12 @@ const fetchExams = async () => {
     }
 }
 
-onMounted(fetchExams)
+onMounted(async () => {
+    await checkAccess()
+    if (isEnrolled.value) {
+        await fetchExams()
+    }
+})
 </script>
 
 <template>
@@ -45,6 +68,17 @@ variant="primary_border"
 >
 Back To Course
 </Button>
+
+<!-- Not enrolled guard -->
+<Contentcontainer v-if="enrollChecked && !isEnrolled" class="text-center py-12 space-y-4">
+    <h2 class="text-2xl font-bold">🔒 Enrollment Required</h2>
+    <p class="text-text-400">You must enroll in this course before accessing exams.</p>
+    <Button @click="go(`/course?courseId=${courseId}`)">
+        Go to Course Page to Enroll
+    </Button>
+</Contentcontainer>
+
+<template v-if="isEnrolled">
 
 <div class="flex justify-between items-center">
 
@@ -83,6 +117,8 @@ Create Exam
 />
 
 </Contentcontainer>
+
+</template>
 
 </main>
 

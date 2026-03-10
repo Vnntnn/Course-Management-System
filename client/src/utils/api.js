@@ -72,6 +72,7 @@ export const enrollmentAPI = {
   enroll: (data) => apiFetch('/api/enrollments/enroll', { method: 'POST', body: JSON.stringify(data) }),
   getStudentCourses: () => apiFetch('/api/enrollments/my-courses'),
   getCourseStudents: (courseId) => apiFetch(`/api/enrollments/courses/${courseId}/students`),
+  checkEnrollment: (courseId) => apiFetch(`/api/enrollments/check/${courseId}`),
 };
 
 // EXAM ENDPOINTS
