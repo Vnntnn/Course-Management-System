@@ -1,6 +1,6 @@
 <script setup>
-import { HugeiconsIcon } from "@hugeicons/vue"
-import * as icons from "@hugeicons/core-free-icons"
+import { HugeiconsIcon, ArrowRightDoubleIcon } from '@/utils/icons'
+const icons = { ArrowRightDoubleIcon }
 import buttons from '@/assets/button.vue'
 import { useRouter } from 'vue-router'
 

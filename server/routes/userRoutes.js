@@ -7,6 +7,7 @@ router.route("/").get(ensureAuthenticated, isAdmin, userController.getAllUsers);
 
 // Must be before /:id
 router.post("/progress", ensureAuthenticated, userController.updateProgress);
+router.get("/progress/:courseId", ensureAuthenticated, userController.getCompletedTopics);
 
 router
   .route("/:id")

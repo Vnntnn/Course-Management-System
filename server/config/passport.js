@@ -1,6 +1,6 @@
 const LocalStrategy = require("passport-local").Strategy;
 const prisma = require("./database");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 module.exports = function (passport) {
   // Local strategy configuration
@@ -9,7 +9,8 @@ module.exports = function (passport) {
       { usernameField: "email" },
       async (email, password, done) => {
         try {
-          const user = await prisma.users.findUnique({ where: { email } });
+          const normalizedEmail = email?.trim()?.toLowerCase();
+          const user = await prisma.users.findUnique({ where: { email: normalizedEmail } });
 
           if (!user) {
             return done(null, false, {

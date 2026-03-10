@@ -189,16 +189,24 @@ const routes = [
     props: true
   },
 
+  // Redirect for exam management
+  {
+    path: '/instructor/exam/:examId',
+    redirect: to => `/instructor/exam/${to.params.examId}/questions`
+  },
+
   // Legacy redirects for backward compatibility
-  { path: '/course', redirect: '/coursebrowser' },
-  { path: '/chapterlist', redirect: '/coursebrowser' },
-  { path: '/details', redirect: '/coursebrowser' },
-  { path: '/examlist', redirect: '/coursebrowser' },
-  { path: '/examdesc', redirect: '/coursebrowser' },
-  { path: '/exampage', redirect: '/coursebrowser' },
-  { path: '/examresult', redirect: '/user' },
+  { path: '/course', redirect: '/browse' },
+  { path: '/chapterlist', redirect: '/browse' },
+  { path: '/details', redirect: '/browse' },
+  { path: '/examlist', redirect: '/browse' },
+  { path: '/examdesc', redirect: '/browse' },
+  { path: '/exampage', redirect: '/browse' },
+  { path: '/examresult', redirect: '/dashboard' },
   { path: '/coursedashboard', redirect: '/instructor/courses' },
   { path: '/coursemanage', redirect: '/instructor/courses' },
+  { path: '/user', redirect: '/dashboard' },
+  { path: '/coursebrowser', redirect: '/browse' },
   
   // Catch-all 404
   {

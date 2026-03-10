@@ -1,8 +1,10 @@
 <script setup>
 import Button from '@/assets/button.vue'
-import { go } from '@/utils/navigation'
 import { theme } from '@/utils/theme'
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const props = defineProps({
     thumbnail : {
@@ -43,7 +45,7 @@ Chapter {{ chapternumber }} - {{ chaptername }}
 Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum totam error cum animi quasi.
 </p>
 
-<Button @click="go('/chapteredit')">
+<Button @click="router.push('/chapteredit')">
 Manage
 </Button>
 

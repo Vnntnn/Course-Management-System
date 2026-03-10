@@ -26,7 +26,7 @@ const choices = ref([
 ])
 
 const correct = ref(0)
-const optionLabels = ['A', 'B', 'C', 'D']
+const getOptionLabel = (index) => String.fromCharCode(65 + index) // A, B, C, D, E...
 
 function addChoice() {
     choices.value.push({
@@ -59,7 +59,7 @@ async function fetchQuestion() {
                 { id: 3, text: q.option_c },
                 { id: 4, text: q.option_d },
             ]
-            correct.value = optionLabels.indexOf(q.correct_option)
+            correct.value = q.correct_option ? q.correct_option.charCodeAt(0) - 65 : 0
             if (correct.value < 0) correct.value = 0
         }
     } catch (err) {
@@ -80,7 +80,7 @@ async function saveQuestion() {
 
     for (let i = 0; i < 4; i++) {
         if (!choices.value[i]?.text?.trim()) {
-            error.value = `Choice ${optionLabels[i]} is required`
+            error.value = `Choice ${getOptionLabel(i)} is required`
             return
         }
     }
@@ -93,7 +93,7 @@ async function saveQuestion() {
             option_b: choices.value[1]?.text || '',
             option_c: choices.value[2]?.text || '',
             option_d: choices.value[3]?.text || '',
-            correct_option: optionLabels[correct.value] || 'A',
+            correct_option: getOptionLabel(correct.value),
         })
         success.value = 'Question updated successfully!'
     } catch (err) {
@@ -103,8 +103,8 @@ async function saveQuestion() {
     }
 }
 
-const goBack = () => router.back()
-const goToExam = () => router.push(`/instructor/exam/${examId.value}`)
+const goBack = () => router.push(`/instructor/exam/${examId.value}/questions`)
+const goToExam = () => router.push(`/instructor/exam/${examId.value}/questions`)
 
 onMounted(fetchQuestion)
 </script>
@@ -147,7 +147,7 @@ onMounted(fetchQuestion)
                         :value="index"
                         v-model="correct"
                     />
-                    <span class="font-semibold w-6">{{ optionLabels[index] || index + 1 }})</span>
+                    <span class="font-semibold w-6">{{ getOptionLabel(index) }})</span>
                     <Inputtext
                         v-model="choice.text"
                         input_placeholder="Choice text"

@@ -37,6 +37,18 @@ fi
 
 echo "[1/4] Installing server dependencies..."
 cd server
+
+# If running on Linux/WSL, clean Windows-compiled native modules
+if [[ "$(uname -s)" == "Linux"* ]]; then
+    if [ -d "node_modules" ] && [ -f "node_modules/.package-lock.json" ]; then
+        # Check if modules were compiled for a different platform
+        if ! node -e "require('bcryptjs')" 2>/dev/null || ! node -e "require('@prisma/client')" 2>/dev/null; then
+            echo "[INFO] Reinstalling native modules for Linux..."
+            rm -rf node_modules
+        fi
+    fi
+fi
+
 npm install --no-optional
 if [ $? -ne 0 ]; then
     echo "[ERROR] Failed to install server dependencies."
@@ -46,7 +58,8 @@ echo "[OK] Server dependencies installed."
 echo ""
 
 echo "[2/4] Setting up database..."
-npx prisma migrate deploy 2>/dev/null || npx prisma generate
+npx prisma generate
+npx prisma migrate deploy 2>/dev/null || echo "[INFO] No migrations to apply"
 echo "[OK] Database ready."
 echo ""
 
@@ -85,12 +98,28 @@ trap cleanup SIGINT SIGTERM
 
 # Start backend in background
 cd server
-node server.js &
+echo "[INFO] Starting backend server..."
+node server.js 2>&1 &
 BACKEND_PID=$!
 cd ..
 
-# Wait for backend to start
-sleep 2
+# Wait for backend to start and verify it's running
+echo "[INFO] Waiting for backend to start..."
+sleep 3
+
+if ! kill -0 $BACKEND_PID 2>/dev/null; then
+    echo "[ERROR] Backend failed to start. Check for errors above."
+    exit 1
+fi
+
+# Verify backend is responding
+if command -v curl &> /dev/null; then
+    if curl -s http://localhost:5000 > /dev/null 2>&1; then
+        echo "[OK] Backend is running on http://localhost:5000"
+    else
+        echo "[WARN] Backend process started but not responding yet..."
+    fi
+fi
 
 # Start frontend (foreground)
 cd client

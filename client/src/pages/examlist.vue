@@ -4,8 +4,8 @@ import { useRoute, useRouter } from 'vue-router'
 import Button from '@/assets/button.vue'
 import Contentcontainer from '@/assets/contentcontainer.vue'
 import Exam from '@/components/exam.vue'
-import { HugeiconsIcon } from '@hugeicons/vue'
-import * as icons from '@hugeicons/core-free-icons'
+import { HugeiconsIcon, Add01Icon } from '@/utils/icons'
+const icons = { Add01Icon }
 import { courseAPI } from '@/utils/api'
 import { useAuth } from '@/utils/auth'
 
@@ -27,7 +27,7 @@ const fetchExams = async () => {
     isLoading.value = true
     error.value = ''
     try {
-        const res = await courseAPI.getById(courseId.value)
+        const res = await courseAPI.getById(courseId.value, true)
         course.value = res.data
         exams.value = res.data?.exams || []
     } catch (err) {
@@ -37,7 +37,7 @@ const fetchExams = async () => {
     }
 }
 
-const goBack = () => router.back()
+const goBack = () => router.push(`/course/${courseId.value}/chapters`)
 
 onMounted(fetchExams)
 </script>

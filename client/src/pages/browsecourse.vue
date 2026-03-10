@@ -1,8 +1,8 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { HugeiconsIcon } from "@hugeicons/vue"
-import * as icons from "@hugeicons/core-free-icons"
+import { HugeiconsIcon, Search02Icon } from '@/utils/icons'
+const icons = { Search02Icon }
 import Button from '@/assets/button.vue'
 import Inputtext from "@/assets/inputtext.vue"
 import Contentcontainer from "@/assets/contentcontainer.vue"

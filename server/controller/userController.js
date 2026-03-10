@@ -106,3 +106,15 @@ exports.updateProgress = async (req, res) => {
     return sendError(res, "Failed to update progress", HTTP_STATUS.BAD_REQUEST);
   }
 };
+
+exports.getCompletedTopics = async (req, res) => {
+  const { courseId } = req.params;
+  const userId = req.user.id;
+
+  try {
+    const completedIds = await progressService.getCompletedTopicIds(userId, courseId);
+    return sendResponse(res, completedIds, "Completed topics retrieved", HTTP_STATUS.OK);
+  } catch (error) {
+    return sendError(res, "Failed to get completed topics", HTTP_STATUS.BAD_REQUEST);
+  }
+};

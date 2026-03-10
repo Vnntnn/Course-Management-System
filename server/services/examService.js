@@ -117,6 +117,24 @@ class ExamService {
     });
   }
 
+  async getExamForStudent(examId) {
+    return await prisma.exams.findUnique({
+      where: { id: parseInt(examId) },
+      include: {
+        questions: {
+          select: {
+            id: true,
+            question_text: true,
+            option_a: true,
+            option_b: true,
+            option_c: true,
+            option_d: true,
+          },
+        },
+      },
+    });
+  }
+
   async getExamsByCourse(courseId) {
     return await prisma.exams.findMany({
       where: { course_id: parseInt(courseId) },

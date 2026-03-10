@@ -93,7 +93,7 @@ async function saveCourse() {
     }
 }
 
-const goBack = () => router.back()
+const goBack = () => router.push('/instructor/courses')
 
 onMounted(fetchCourse)
 </script>

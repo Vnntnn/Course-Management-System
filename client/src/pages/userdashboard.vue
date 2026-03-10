@@ -1,6 +1,6 @@
 <script setup>
-import { HugeiconsIcon } from '@hugeicons/vue'
-import * as icons from '@hugeicons/core-free-icons/index'
+import { HugeiconsIcon, Search02Icon, Book02Icon } from '@/utils/icons'
+const icons = { Search02Icon, Book02Icon }
 import { useRouter } from 'vue-router'
 import contentcontainer from '@/assets/contentcontainer.vue'
 import { theme } from '@/utils/theme'

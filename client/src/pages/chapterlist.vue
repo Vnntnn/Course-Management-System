@@ -1,8 +1,8 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { HugeiconsIcon } from '@hugeicons/vue'
-import * as icons from '@hugeicons/core-free-icons'
+import { HugeiconsIcon, Add01Icon } from '@/utils/icons'
+const icons = { Add01Icon }
 import Contentcontainer from '@/assets/contentcontainer.vue'
 import Button from '@/assets/button.vue'
 import { courseAPI } from '@/utils/api'
@@ -26,7 +26,7 @@ const fetchCourse = async () => {
     isLoading.value = true
     error.value = ''
     try {
-        const res = await courseAPI.getById(courseId.value)
+        const res = await courseAPI.getById(courseId.value, true)
         course.value = res.data
         lessons.value = res.data?.lessons || []
     } catch (err) {
@@ -36,7 +36,7 @@ const fetchCourse = async () => {
     }
 }
 
-const goBack = () => router.back()
+const goBack = () => router.push(`/course/${courseId.value}`)
 
 onMounted(fetchCourse)
 </script>

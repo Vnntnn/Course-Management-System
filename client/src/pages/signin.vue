@@ -1,8 +1,8 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { HugeiconsIcon } from '@hugeicons/vue'
-import * as icons from '@hugeicons/core-free-icons/index'
+import { HugeiconsIcon, Home03Icon, StudentIcon, TeacherIcon } from '@/utils/icons'
+const icons = { Home03Icon, StudentIcon, TeacherIcon }
 import Button from '@/assets/button.vue'
 import inputtext from '@/assets/inputtext.vue'
 import { useAuth } from '@/utils/auth'

@@ -26,15 +26,28 @@ const fetchLesson = async () => {
     if (!courseId.value || !lessonId.value) return
     isLoading.value = true
     error.value = ''
+    // Reset completed topics on fresh fetch
+    completedTopics.value = new Set()
+    
     try {
-        const res = await courseAPI.getById(courseId.value)
-        const course = res.data
+        const courseRes = await courseAPI.getById(courseId.value, true)
+        const course = courseRes.data
         const found = course?.lessons?.find(l => l.id === parseInt(lessonId.value))
         if (found) {
             lesson.value = found
             topics.value = found.topics || []
         } else {
             error.value = 'Lesson not found'
+        }
+        
+        // Fetch completed topics (for students)
+        try {
+            const progressRes = await userAPI.getCompletedTopics(courseId.value)
+            if (progressRes.data && Array.isArray(progressRes.data)) {
+                progressRes.data.forEach(id => completedTopics.value.add(id))
+            }
+        } catch {
+            // Ignore if not a student or not authenticated
         }
     } catch (err) {
         error.value = err.message || 'Failed to load lesson'
@@ -58,7 +71,7 @@ const markComplete = async (topicId) => {
     }
 }
 
-const goBack = () => router.back()
+const goBack = () => router.push(`/course/${courseId.value}/chapters`)
 
 onMounted(fetchLesson)
 </script>

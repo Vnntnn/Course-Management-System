@@ -208,7 +208,7 @@ exports.getExamsByCourse = async (req, res) => {
 exports.getExamForStudent = async (req, res) => {
   try {
     const { exam_id } = req.params;
-    const exam = await examService.getExamById(exam_id);
+    const exam = await examService.getExamForStudent(exam_id);
 
     if (!exam) return sendError(res, "Exam not found", HTTP_STATUS.NOT_FOUND);
     return sendResponse(res, exam, "Get exam successfully.", HTTP_STATUS.OK);

@@ -4,8 +4,8 @@ import { useRouter } from 'vue-router'
 import Button from '@/assets/button.vue'
 import Inputtext from '@/assets/inputtext.vue'
 import { useAuth } from '@/utils/auth'
-import * as icons from '@hugeicons/core-free-icons/index'
-import { HugeiconsIcon } from '@hugeicons/vue'
+import { HugeiconsIcon, Home03Icon } from '@/utils/icons'
+const icons = { Home03Icon }
 
 const router = useRouter()
 const { login, isLoading, error } = useAuth()

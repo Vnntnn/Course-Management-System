@@ -4,8 +4,8 @@ import { useRoute, useRouter } from 'vue-router'
 import Button from '@/assets/button.vue'
 import Contentcontainer from '@/assets/contentcontainer.vue'
 import Inputtext from '@/assets/inputtext.vue'
-import { HugeiconsIcon } from '@hugeicons/vue'
-import * as icons from '@hugeicons/core-free-icons/index'
+import { HugeiconsIcon, Add01Icon } from '@/utils/icons'
+const icons = { Add01Icon }
 import { examAPI } from '@/utils/api'
 
 const route = useRoute()
@@ -64,7 +64,7 @@ async function createExam() {
         })
         success.value = 'Exam created! Redirecting to add questions...'
         const newExamId = res.data?.id
-        setTimeout(() => router.push(`/instructor/exam/${newExamId}`), 1500)
+        setTimeout(() => router.push(`/instructor/exam/${newExamId}/question/create`), 1000)
     } catch (err) {
         error.value = err.message || 'Failed to create exam'
     } finally {
@@ -89,7 +89,14 @@ async function saveExam() {
     }
 }
 
-const goBack = () => router.back()
+const goBack = () => {
+    const cId = courseId.value || exam.value?.course_id
+    if (cId) {
+        router.push(`/instructor/course/${cId}/edit`)
+    } else {
+        router.push('/instructor/courses')
+    }
+}
 const goToQuestionCreate = () => router.push(`/instructor/exam/${examId.value}/question/create`)
 const goToQuestionEdit = (questionId) => router.push(`/instructor/exam/${examId.value}/question/${questionId}/edit`)
 

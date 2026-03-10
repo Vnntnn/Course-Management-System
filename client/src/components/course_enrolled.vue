@@ -1,6 +1,6 @@
 <script setup>
-import { HugeiconsIcon } from '@hugeicons/vue'
-import * as icons from '@hugeicons/core-free-icons'
+import { HugeiconsIcon, UserIcon } from '@/utils/icons'
+const icons = { User: UserIcon }
 import Button from '@/assets/button.vue'
 import { useRouter } from 'vue-router'
 import { computed } from 'vue'
@@ -59,10 +59,11 @@ const classes = computed(() => {
 const goToChapters = () => router.push(`/course/${props.courseId}/chapters`)
 const goToExams = () => router.push(`/course/${props.courseId}/exams`)
 const goToManage = () => router.push(`/instructor/course/${props.courseId}/edit`)
+const goToCourseOverview = () => router.push(`/course/${props.courseId}`)
 </script>
 
 <template>
-    <div :class="classes">
+    <div :class="classes" class="cursor-pointer" @click="goToCourseOverview">
         <img
             :src="thumbnail"
             class="rounded-t-xl w-full h-52 object-cover object-center"
@@ -85,10 +86,10 @@ const goToManage = () => router.push(`/instructor/course/${props.courseId}/edit`
                 <Progressbar :progress="progress" />
 
                 <div class="flex gap-2">
-                    <Button @click="goToChapters">
+                    <Button @click.stop="goToChapters">
                         {{ progressBtn }}
                     </Button>
-                    <Button @click="goToExams" variant="primary_border">
+                    <Button @click.stop="goToExams" variant="primary_border">
                         Exam
                     </Button>
                 </div>
@@ -97,13 +98,13 @@ const goToManage = () => router.push(`/instructor/course/${props.courseId}/edit`
             <!-- INSTRUCTOR ONLY -->
             <template v-if="role === 'instructor'">
                 <div class="flex gap-2">
-                    <Button @click="goToManage">
+                    <Button @click.stop="goToManage">
                         Manage
                     </Button>
-                    <Button @click="goToChapters" variant="primary_border">
+                    <Button @click.stop="goToChapters" variant="primary_border">
                         Chapter
                     </Button>
-                    <Button @click="goToExams" variant="primary_border">
+                    <Button @click.stop="goToExams" variant="primary_border">
                         Exam
                     </Button>
                 </div>

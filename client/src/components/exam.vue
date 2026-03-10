@@ -55,7 +55,7 @@ const classes = computed(() => {
     return `${base} ${themes[theme.value] || themes.light}`
 })
 
-const goToExamDesc = () => router.push(`/course/${props.courseId}/exam/${props.examId}`)
+const goToExamDesc = () => router.push(`/exam/${props.examId}`)
 const goToExamManage = () => router.push(`/instructor/exam/${props.examId}`)
 const goToQuestionList = () => router.push(`/instructor/exam/${props.examId}/questions`)
 </script>

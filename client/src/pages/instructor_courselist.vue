@@ -3,8 +3,8 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import Button from '@/assets/button.vue'
 import Contentcontainer from '@/assets/contentcontainer.vue'
-import { HugeiconsIcon } from '@hugeicons/vue'
-import * as icons from '@hugeicons/core-free-icons/index'
+import { HugeiconsIcon, Add01Icon } from '@/utils/icons'
+const icons = { Add01Icon }
 import { courseAPI } from '@/utils/api'
 
 const router = useRouter()
@@ -37,7 +37,7 @@ const deleteCourse = async (id, title) => {
     }
 }
 
-const goBack = () => router.back()
+const goBack = () => router.push('/dashboard')
 
 onMounted(fetchCourses)
 </script>

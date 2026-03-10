@@ -1,8 +1,8 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { HugeiconsIcon } from '@hugeicons/vue'
-import * as icons from '@hugeicons/core-free-icons/index'
+import { HugeiconsIcon, UserIcon, Book02Icon } from '@/utils/icons'
+const icons = { UserIcon, Book02Icon }
 import Button from '@/assets/button.vue'
 import Contentcontainer from '@/assets/contentcontainer.vue'
 import { courseAPI, enrollmentAPI } from '@/utils/api'
@@ -16,6 +16,7 @@ const { currentUser } = useAuth()
 const isStudent = computed(() => currentUser.value?.role === 'student')
 
 const course = ref(null)
+const isEnrolled = ref(false)
 const isLoading = ref(false)
 const isEnrolling = ref(false)
 const error = ref('')
@@ -28,6 +29,12 @@ const fetchCourse = async () => {
     try {
         const res = await courseAPI.getById(courseId.value)
         course.value = res.data
+        
+        // Check enrollment status for students
+        if (isStudent.value) {
+            const enrollRes = await enrollmentAPI.checkEnrollment(courseId.value)
+            isEnrolled.value = enrollRes.data?.enrolled || false
+        }
     } catch (err) {
         error.value = err.message || 'Failed to load course'
     } finally {
@@ -46,9 +53,11 @@ const handleEnroll = async () => {
     try {
         await enrollmentAPI.enroll({ course_id: parseInt(courseId.value) })
         enrollSuccess.value = 'Enrolled successfully!'
+        isEnrolled.value = true
         setTimeout(() => router.push(`/course/${courseId.value}/chapters`), 1000)
     } catch (err) {
         if (err.message?.includes('Already enrolled')) {
+            isEnrolled.value = true
             router.push(`/course/${courseId.value}/chapters`)
         } else {
             error.value = err.message || 'Failed to enroll'
@@ -58,7 +67,9 @@ const handleEnroll = async () => {
     }
 }
 
-const goBack = () => router.back()
+const goToCourse = () => router.push(`/course/${courseId.value}/chapters`)
+
+const goBack = () => router.push('/browse')
 
 onMounted(fetchCourse)
 </script>
@@ -86,18 +97,25 @@ onMounted(fetchCourse)
                     </p>
                     <p>{{ course.description }}</p>
                     <p class="text-text-400 text-sm">
-                        {{ course.lessons?.length || 0 }} lessons · {{ course.exams?.length || 0 }} exams
+                        {{ course._count?.lessons || course.lessons?.length || 0 }} lessons · {{ course._count?.exams || course.exams?.length || 0 }} exams
                     </p>
 
                     <div v-if="enrollSuccess" class="text-green-500">{{ enrollSuccess }}</div>
 
                     <div class="flex gap-3 flex-wrap">
-                        <Button v-if="isStudent" @click="handleEnroll" :disabled="isEnrolling">
-                            <HugeiconsIcon :icon="icons.Book02Icon" :size="18"/>
-                            {{ isEnrolling ? 'Enrolling...' : 'Enroll & Start Learning' }}
-                        </Button>
-                        <Button variant="primary_border" @click="router.push(`/course/${courseId}/chapters`)">
-                            View Lessons
+                        <!-- Show different button based on enrollment status -->
+                        <template v-if="isStudent">
+                            <Button v-if="isEnrolled" @click="goToCourse" class="flex items-center gap-2">
+                                <HugeiconsIcon :icon="icons.Book02Icon" :size="18"/>
+                                Continue Learning
+                            </Button>
+                            <Button v-else @click="handleEnroll" :disabled="isEnrolling" class="flex items-center gap-2">
+                                <HugeiconsIcon :icon="icons.Book02Icon" :size="18"/>
+                                {{ isEnrolling ? 'Enrolling...' : 'Enroll & Start Learning' }}
+                            </Button>
+                        </template>
+                        <Button v-else @click="goToCourse">
+                            View Course
                         </Button>
                         <Button variant="primary_border" @click="router.push(`/course/${courseId}/exams`)">
                             View Exams

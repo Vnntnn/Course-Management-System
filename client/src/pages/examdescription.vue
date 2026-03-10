@@ -27,7 +27,13 @@ const fetchExam = async () => {
     }
 }
 
-const goBack = () => router.back()
+const goBack = () => {
+    if (exam.value?.course_id) {
+        router.push(`/course/${exam.value.course_id}/exams`)
+    } else {
+        router.push('/dashboard')
+    }
+}
 
 onMounted(fetchExam)
 </script>

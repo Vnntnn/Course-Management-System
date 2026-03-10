@@ -1,10 +1,12 @@
 <script setup>
-    import { HugeiconsIcon } from '@hugeicons/vue';
-    import * as icons from '@hugeicons/core-free-icons/index'
+    import { HugeiconsIcon, UserIcon } from '@/utils/icons';
+    const icons = { User: UserIcon }
     import Button from '@/assets/button.vue';
-    import { go } from '@/utils/navigation';
+    import { useRouter } from 'vue-router';
     import { theme } from '@/utils/theme';
 import { computed } from 'vue';
+
+    const router = useRouter()
 
     const props = defineProps({
         coursename : {
@@ -43,7 +45,7 @@ import { computed } from 'vue';
         <p class="text-text-300">{{ coursedesc }}</p>
         <p class="flex gap-2"><HugeiconsIcon :icon="icons.User"/>Manop EXE</p>
 
-        <Button @click="go('/course')" class="mt-auto">
+        <Button @click="router.push('/course')" class="mt-auto">
             Edit Course
         </Button>
     </div>

@@ -67,6 +67,31 @@ exports.getEnrolledCourses = async (req, res) => {
   }
 };
 
+exports.checkEnrollment = async (req, res) => {
+  try {
+    const { course_id } = req.params;
+    const studentId = req.user.id;
+
+    const isEnrolled = await enrollmentService.isExistingEnrollment(
+      studentId,
+      course_id,
+    );
+
+    return sendResponse(
+      res,
+      { enrolled: isEnrolled },
+      isEnrolled ? "Already enrolled" : "Not enrolled",
+      HTTP_STATUS.OK,
+    );
+  } catch (error) {
+    return sendError(
+      res,
+      "Failed to check enrollment",
+      HTTP_STATUS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
+
 exports.unenrollCourse = async (req, res) => {
   try {
     const { course_id } = req.params;

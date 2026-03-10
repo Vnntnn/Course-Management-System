@@ -23,8 +23,8 @@ const choices = ref([
     { id: 4, text: '' }
 ])
 
-const correctIndex = ref(0)
-const optionLabels = ['A', 'B', 'C', 'D']
+const correctIndex = ref(-1) // -1 means not selected
+const getOptionLabel = (index) => String.fromCharCode(65 + index) // A, B, C, D, E...
 
 function addChoice() {
     choices.value.push({
@@ -60,9 +60,14 @@ async function createQuestion(e) {
 
     for (let i = 0; i < choices.value.length; i++) {
         if (!choices.value[i].text.trim()) {
-            error.value = `Choice ${optionLabels[i] || i + 1} text is required`
+            error.value = `Choice ${getOptionLabel(i)} text is required`
             return
         }
+    }
+
+    if (correctIndex.value < 0) {
+        error.value = 'Please select the correct answer'
+        return
     }
 
     isSubmitting.value = true
@@ -73,7 +78,7 @@ async function createQuestion(e) {
             option_b: choices.value[1]?.text || '',
             option_c: choices.value[2]?.text || '',
             option_d: choices.value[3]?.text || '',
-            correct_option: optionLabels[correctIndex.value] || 'A',
+            correct_option: getOptionLabel(correctIndex.value),
         }
 
         await examAPI.addQuestions(examId.value, [question])
@@ -87,7 +92,7 @@ async function createQuestion(e) {
             { id: 3, text: '' },
             { id: 4, text: '' }
         ]
-        correctIndex.value = 0
+        correctIndex.value = -1
     } catch (err) {
         error.value = err.message || 'Failed to create question'
     } finally {
@@ -95,8 +100,8 @@ async function createQuestion(e) {
     }
 }
 
-const goBack = () => router.back()
-const goToExam = () => router.push(`/instructor/exam/${examId.value}`)
+const goBack = () => router.push(`/instructor/exam/${examId.value}/questions`)
+const goToExam = () => router.push(`/instructor/exam/${examId.value}/questions`)
 </script>
 
 <template>
@@ -133,7 +138,7 @@ const goToExam = () => router.push(`/instructor/exam/${examId.value}`)
                             :value="index"
                             v-model="correctIndex"
                         />
-                        <span class="font-semibold w-6">{{ optionLabels[index] || index + 1 }})</span>
+                        <span class="font-semibold w-6">{{ getOptionLabel(index) }})</span>
                         <Inputtext
                             v-model="choice.text"
                             input_placeholder="Choice text"

@@ -1,6 +1,6 @@
 <script setup>
-import { HugeiconsIcon } from '@hugeicons/vue'
-import * as icons from '@hugeicons/core-free-icons/index'
+import { HugeiconsIcon, UserIcon } from '@/utils/icons'
+const icons = { User: UserIcon }
 import Button from '@/assets/button.vue'
 import { useRouter } from 'vue-router'
 import { theme } from '@/utils/theme'
@@ -44,7 +44,7 @@ const goToCourse = () => router.push(`/course/${props.courseId}`)
 </script>
 
 <template>
-    <div :class="classes">
+    <div :class="classes" class="cursor-pointer" @click="goToCourse">
         <img :src="thumbnail" class="rounded-t-xl w-full h-50 object-cover" />
 
         <div class="p-4 flex flex-col flex-1">
@@ -55,7 +55,7 @@ const goToCourse = () => router.push(`/course/${props.courseId}`)
                 {{ instructorname }}
             </p>
 
-            <Button @click="goToCourse" class="mt-auto">
+            <Button @click.stop="goToCourse" class="mt-auto">
                 Enter Course
             </Button>
         </div>

@@ -75,7 +75,7 @@ const submitExam = async () => {
     }
 }
 
-const goBack = () => router.back()
+const goBack = () => router.push(`/exam/${examId.value}`)
 
 onMounted(fetchExam)
 </script>
