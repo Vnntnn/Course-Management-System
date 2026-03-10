@@ -75,6 +75,23 @@ class ProgressService {
 
     return Math.round((completedItems / totalItems) * 100);
   }
+
+  async getCompletedTopicIds(userId, courseId) {
+    const completed = await prisma.userProgress.findMany({
+      where: {
+        user_id: parseInt(userId),
+        topic: {
+          lesson: {
+            course_id: parseInt(courseId),
+          },
+        },
+      },
+      select: {
+        topic_id: true,
+      },
+    });
+    return completed.map((c) => c.topic_id);
+  }
 }
 
 module.exports = new ProgressService();

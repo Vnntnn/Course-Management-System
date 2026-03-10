@@ -59,9 +59,10 @@ exports.createCourse = async (req, res) => {
  */
 exports.getCourseById = async (req, res) => {
   const { id } = req.params;
+  const includeDetails = req.query.details === 'true';
 
   try {
-    const course = await courseService.getCourseById(id);
+    const course = await courseService.getCourseById(id, includeDetails);
 
     if (!course) {
       return sendError(res, "Course not found", HTTP_STATUS.NOT_FOUND);

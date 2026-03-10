@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import Contentcontainer from '@/assets/contentcontainer.vue';
 import Button from '@/assets/button.vue';
 import { go, goBack } from '@/utils/navigation';
@@ -8,9 +8,6 @@ import { useAuth } from '@/utils/auth'
 
 const params = new URLSearchParams(window.location.search)
 const examId = params.get('examId')
-
-const { currentUser } = useAuth()
-const role = computed(() => currentUser.value?.role || 'student')
 
 const exam = ref(null)
 const questions = ref([])
@@ -22,10 +19,11 @@ const isEnrolled = ref(false)
 const enrollChecked = ref(false)
 
 const fetchExam = async () => {
-    if (!examId) return
+    if (!examId.value) return
     isLoading.value = true
+    error.value = ''
     try {
-        const res = await examAPI.getById(examId)
+        const res = await examAPI.getById(examId.value)
         exam.value = res.data
         questions.value = res.data?.questions || []
         isEnrolled.value = true
@@ -46,9 +44,12 @@ const selectAnswer = (questionId, option) => {
     answers.value[questionId] = option
 }
 
+const answeredCount = computed(() => Object.keys(answers.value).length)
+
 const submitExam = async () => {
     error.value = ''
 
+    // Build answers array: [{question_id, selected_option}]
     const answerList = questions.value.map(q => ({
         question_id: q.id,
         selected_option: answers.value[q.id] || ''
@@ -65,15 +66,16 @@ const submitExam = async () => {
     try {
         const res = await examAPI.submit(examId, answerList)
         const result = res.data
-        const score = result.summary?.score || result.score || 0
-        const maxscore = result.summary?.total || questions.value.length
-        go(`/examresult?score=${score}&maxscore=${maxscore}&examId=${examId}`)
+        // Navigate to result page with score
+        go(`/examresult?score=${result.score || 0}&maxscore=${questions.value.length}&examId=${examId}`)
     } catch (err) {
         error.value = err.message || 'Failed to submit exam'
     } finally {
         isSubmitting.value = false
     }
 }
+
+const goBack = () => router.push(`/exam/${examId.value}`)
 
 onMounted(async () => {
     if (role.value === 'instructor') {
@@ -86,8 +88,9 @@ onMounted(async () => {
 
 <template>
     <main class="mt-24 mx-5 space-y-5">
-
-        <Button variant="primary_border" @click="goBack()">← Back</Button>
+        <Button variant="primary_border" @click="goBack()">
+            ← Exit Exam
+        </Button>
 
         <div v-if="isLoading" class="text-text-400 text-center py-8">Loading exam...</div>
         <div v-if="error" class="text-red-500 text-center py-4">{{ error }}</div>
@@ -102,8 +105,15 @@ onMounted(async () => {
         </Contentcontainer>
 
         <template v-if="exam && !isLoading">
-            <h1 class="text-3xl font-bold">{{ exam.title }}</h1>
-            <p class="text-text-400">{{ questions.length }} question(s)</p>
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold">{{ exam.title }}</h1>
+                    <p class="text-text-400">{{ questions.length }} question(s)</p>
+                </div>
+                <div class="text-text-400">
+                    Answered: {{ answeredCount }} / {{ questions.length }}
+                </div>
+            </div>
 
             <Contentcontainer
                 v-for="(q, index) in questions"
@@ -131,15 +141,18 @@ onMounted(async () => {
                             :checked="answers[q.id] === opt"
                             class="sr-only"
                         />
-                        <span class="font-bold">{{ opt }})</span>
+                        <span class="font-bold w-6">{{ opt }})</span>
                         <span>{{ q[`option_${opt.toLowerCase()}`] }}</span>
                     </label>
                 </div>
             </Contentcontainer>
 
-            <div class="pb-8">
+            <div class="pb-8 flex gap-3">
                 <Button @click="submitExam" :disabled="isSubmitting" class="flex gap-2">
                     {{ isSubmitting ? 'Submitting...' : 'Submit Exam' }}
+                </Button>
+                <Button variant="primary_border" @click="goBack()">
+                    Cancel
                 </Button>
             </div>
         </template>

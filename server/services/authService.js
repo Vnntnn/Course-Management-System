@@ -1,16 +1,17 @@
 const prisma = require("../config/database");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const { ROLES } = require("../utils/constants");
 
 class AuthService {
   async register(userData) {
     const { full_name, email, password, role } = userData;
+    const normalizedEmail = email?.trim()?.toLowerCase();
     const hashedPassword = await bcrypt.hash(password, 12);
 
     return await prisma.users.create({
       data: {
         full_name,
-        email,
+        email: normalizedEmail,
         password_hash: hashedPassword,
         role: role || ROLES.STUDENT,
       },
@@ -18,8 +19,9 @@ class AuthService {
   }
 
   async findUserByEmail(email) {
+    const normalizedEmail = email?.trim()?.toLowerCase();
     return await prisma.users.findUnique({
-      where: { email },
+      where: { email: normalizedEmail },
     });
   }
 

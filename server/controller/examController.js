@@ -45,6 +45,57 @@ exports.createExam = async (req, res) => {
   }
 };
 
+exports.updateExam = async (req, res) => {
+  const { exam_id } = req.params;
+  const { title, total_questions } = req.body;
+
+  try {
+    const exam = await examService.getExamById(exam_id);
+    if (!exam) {
+      return sendError(res, "Exam not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    const course = await courseService.getCourseById(exam.course_id);
+    if (!course || course.instructor_id !== req.user.id) {
+      return sendError(
+        res,
+        "Unauthorized to update this exam",
+        HTTP_STATUS.FORBIDDEN,
+      );
+    }
+
+    const updated = await examService.updateExam(exam_id, { title, total_questions });
+    return sendResponse(res, updated, "Exam updated successfully.", HTTP_STATUS.OK);
+  } catch (error) {
+    return sendError(res, error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+};
+
+exports.deleteExam = async (req, res) => {
+  const { exam_id } = req.params;
+
+  try {
+    const exam = await examService.getExamById(exam_id);
+    if (!exam) {
+      return sendError(res, "Exam not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    const course = await courseService.getCourseById(exam.course_id);
+    if (!course || course.instructor_id !== req.user.id) {
+      return sendError(
+        res,
+        "Unauthorized to delete this exam",
+        HTTP_STATUS.FORBIDDEN,
+      );
+    }
+
+    await examService.deleteExam(exam_id);
+    return sendResponse(res, null, "Exam deleted successfully.", HTTP_STATUS.OK);
+  } catch (error) {
+    return sendError(res, error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+};
+
 exports.createQuestions = async (req, res) => {
   const { exam_id } = req.params;
   const { questions } = req.body; // questions should be [{ question_text, option_a, option_b, option_c, option_d, correct_option }]
@@ -85,10 +136,80 @@ exports.createQuestions = async (req, res) => {
   }
 };
 
+exports.updateQuestion = async (req, res) => {
+  const { question_id } = req.params;
+  const { question_text, option_a, option_b, option_c, option_d, correct_option } = req.body;
+
+  try {
+    const question = await examService.getQuestionById(question_id);
+    if (!question) {
+      return sendError(res, "Question not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    const exam = await examService.getExamById(question.exam_id);
+    const course = await courseService.getCourseById(exam.course_id);
+    if (!course || course.instructor_id !== req.user.id) {
+      return sendError(
+        res,
+        "Unauthorized to update this question",
+        HTTP_STATUS.FORBIDDEN,
+      );
+    }
+
+    const updated = await examService.updateQuestion(question_id, {
+      question_text,
+      option_a,
+      option_b,
+      option_c,
+      option_d,
+      correct_option,
+    });
+    return sendResponse(res, updated, "Question updated successfully.", HTTP_STATUS.OK);
+  } catch (error) {
+    return sendError(res, error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+};
+
+exports.deleteQuestion = async (req, res) => {
+  const { question_id } = req.params;
+
+  try {
+    const question = await examService.getQuestionById(question_id);
+    if (!question) {
+      return sendError(res, "Question not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    const exam = await examService.getExamById(question.exam_id);
+    const course = await courseService.getCourseById(exam.course_id);
+    if (!course || course.instructor_id !== req.user.id) {
+      return sendError(
+        res,
+        "Unauthorized to delete this question",
+        HTTP_STATUS.FORBIDDEN,
+      );
+    }
+
+    await examService.deleteQuestion(question_id);
+    return sendResponse(res, null, "Question deleted successfully.", HTTP_STATUS.OK);
+  } catch (error) {
+    return sendError(res, error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+};
+
+exports.getExamsByCourse = async (req, res) => {
+  const { courseId } = req.params;
+  try {
+    const exams = await examService.getExamsByCourse(courseId);
+    return sendResponse(res, exams, "Exams fetched successfully.", HTTP_STATUS.OK);
+  } catch (error) {
+    return sendError(res, error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+};
+
 exports.getExamForStudent = async (req, res) => {
   try {
     const { exam_id } = req.params;
-    const exam = await examService.getExamById(exam_id);
+    const exam = await examService.getExamForStudent(exam_id);
 
     if (!exam) return sendError(res, "Exam not found", HTTP_STATUS.NOT_FOUND);
 

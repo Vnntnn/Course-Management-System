@@ -14,6 +14,18 @@ router.post(
   isInstructor,
   contentController.createLesson,
 );
+router.put(
+  "/lessons/:lessonId",
+  ensureAuthenticated,
+  isInstructor,
+  contentController.updateLesson,
+);
+router.delete(
+  "/lessons/:lessonId",
+  ensureAuthenticated,
+  isInstructor,
+  contentController.deleteLesson,
+);
 router.get(
   "/courses/:courseId/lessons",
   ensureAuthenticated,
@@ -26,6 +38,18 @@ router.post(
   ensureAuthenticated,
   isInstructor,
   contentController.createTopic,
+);
+router.put(
+  "/topics/:topicId",
+  ensureAuthenticated,
+  isInstructor,
+  contentController.updateTopic,
+);
+router.delete(
+  "/topics/:topicId",
+  ensureAuthenticated,
+  isInstructor,
+  contentController.deleteTopic,
 );
 
 module.exports = router;

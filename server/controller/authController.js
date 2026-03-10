@@ -4,7 +4,8 @@ const { sendResponse, sendError } = require("../utils/responseHelper");
 const { HTTP_STATUS, ROLES } = require("../utils/constants");
 
 exports.register = async (req, res) => {
-  const { full_name, email, password, role } = req.body;
+  const { full_name, password, role } = req.body;
+  const email = req.body.email?.trim()?.toLowerCase();
 
   if (!full_name || !email || !password) {
     return sendError(
@@ -14,7 +15,7 @@ exports.register = async (req, res) => {
     );
   }
 
-  if (password.length <= 8 || password.length >= 20) {
+  if (password.length < 8 || password.length > 20) {
     return sendError(
       res,
       "Password must be between 8 and 20 characters",

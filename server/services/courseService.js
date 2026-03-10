@@ -15,37 +15,56 @@ class CourseService {
     });
   }
 
-  async getCourseById(id) {
+  async getCourseById(id, includeDetails = false) {
+    const include = {
+      instructor: {
+        select: {
+          id: true,
+          full_name: true,
+          email: true,
+        },
+      },
+      _count: {
+        select: { lessons: true, exams: true, enrollments: true },
+      },
+    };
+
+    // Only include heavy data when explicitly requested
+    if (includeDetails) {
+      include.lessons = {
+        orderBy: { order_index: 'asc' },
+        include: { topics: { orderBy: { order_index: 'asc' } } },
+      };
+      include.exams = {
+        select: { id: true, title: true, total_questions: true },
+      };
+    }
+
     return await prisma.courses.findUnique({
       where: { id: parseInt(id, 10) },
-      include: {
-        instructor: {
-          select: {
-            id: true,
-            full_name: true,
-            email: true,
-          },
-        },
-        lessons: {
-          orderBy: { order_index: 'asc' },
-          include: { topics: { orderBy: { order_index: 'asc' } } },
-        },
-        exams: true,
-      },
+      include,
     });
   }
 
   async getAllCourses() {
     return await prisma.courses.findMany({
-      include: {
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        thumbnail_url: true,
+        created_at: true,
         instructor: {
           select: {
             id: true,
             full_name: true,
-            email: true,
           },
         },
+        _count: {
+          select: { enrollments: true, lessons: true },
+        },
       },
+      orderBy: { created_at: 'desc' },
     });
   }
 
