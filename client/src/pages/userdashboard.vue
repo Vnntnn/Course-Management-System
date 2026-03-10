@@ -36,7 +36,7 @@ const actionLabel = computed(() => {
 
 const actionRoute = computed(() => {
     return role.value === 'instructor'
-        ? '/coursemanage'
+        ? '/coursedashboard'
         : '/coursebrowser'
 })
 
@@ -139,7 +139,7 @@ v-for="item in filteredCourses"
 :coursename="item.course?.title || item.title || 'Untitled'"
 :instructorname="item.course?.instructor?.full_name || item.instructor?.full_name || ''"
 :thumbnail="item.course?.thumbnail_url || item.thumbnail_url || 'https://i.pinimg.com/736x/a2/31/9c/a2319c01c458e70c57ddddbc4c2244b5.jpg'"
-:progress="'0'"
+:progress="String(item.progress || '0')"
 :role="role"
 :courseId="item.course?.id || item.id"
 />

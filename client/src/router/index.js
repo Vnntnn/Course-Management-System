@@ -18,6 +18,7 @@ import Exampage from '@/pages/exampage.vue'
 import Examresult from '@/pages/examresult.vue'
 
 // Instructor Pages
+import instructor_courselist from '@/pages/instructor_courselist.vue'
 import instructor_createchapter from '@/pages/instructor_createchapter.vue'
 import instructor_createquestion from '@/pages/instructor_createquestion.vue'
 import instructor_editchapter from '@/pages/instructor_editchapter.vue'
@@ -81,6 +82,10 @@ const routes = [
     component: Examresult
   },
 
+  {
+    path: '/coursedashboard',
+    component: instructor_courselist
+  },
   {
     path: '/coursemanage',
     component: instructor_editcourse

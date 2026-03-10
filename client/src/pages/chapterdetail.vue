@@ -1,18 +1,26 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import Button from '@/assets/button.vue';
 import Contentcontainer from '@/assets/contentcontainer.vue';
 import { go, goBack } from '@/utils/navigation';
-import { courseAPI } from '@/utils/api'
+import { courseAPI, userAPI } from '@/utils/api'
+import { useAuth } from '@/utils/auth'
 
 const params = new URLSearchParams(window.location.search)
 const courseId = params.get('courseId')
 const lessonId = params.get('lessonId')
 
+const { currentUser } = useAuth()
+// Only students can mark progress
+const isStudent = computed(() => currentUser.value?.role === 'student')
+
 const lesson = ref(null)
 const topics = ref([])
 const isLoading = ref(false)
 const error = ref('')
+
+// Track which topics are locally marked complete during this session
+const completedTopics = ref(new Set())
 
 const fetchLesson = async () => {
     if (!courseId || !lessonId) return
@@ -31,6 +39,21 @@ const fetchLesson = async () => {
         error.value = err.message || 'Failed to load lesson'
     } finally {
         isLoading.value = false
+    }
+}
+
+const markComplete = async (topicId) => {
+    if (!courseId || !topicId) return
+    
+    try {
+        await userAPI.updateProgress({
+            topic_id: topicId,
+            course_id: parseInt(courseId)
+        })
+        completedTopics.value.add(topicId)
+    } catch (err) {
+        console.error('Failed to update progress', err)
+        alert('Failed to save progress. Please try again.')
     }
 }
 
@@ -54,10 +77,14 @@ onMounted(fetchLesson)
             <Contentcontainer
                 v-for="topic in topics"
                 :key="topic.id"
-                class="space-y-2"
+                class="space-y-4"
             >
-                <h2 class="text-xl font-bold">{{ topic.title }}</h2>
-                <span class="text-xs text-text-400 uppercase">{{ topic.content_type }}</span>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h2 class="text-xl font-bold">{{ topic.title }}</h2>
+                        <span class="text-xs text-text-400 uppercase">{{ topic.content_type }}</span>
+                    </div>
+                </div>
 
                 <!-- Text content -->
                 <div v-if="topic.content_type === 'text'" class="whitespace-pre-wrap">
@@ -81,6 +108,19 @@ onMounted(fetchLesson)
                 <!-- Fallback -->
                 <div v-else>
                     {{ topic.content_body }}
+                </div>
+                
+                <!-- Progress Tracking Button (Students Only) -->
+                <div v-if="isStudent" class="pt-4 border-t border-ci-secondary-2/50 flex justify-end">
+                    <Button 
+                        v-if="!completedTopics.has(topic.id)"
+                        @click="markComplete(topic.id)"
+                    >
+                        Mark as Complete
+                    </Button>
+                    <div v-else class="text-green-500 font-semibold flex items-center gap-2">
+                        ✓ Completed
+                    </div>
                 </div>
             </Contentcontainer>
         </template>

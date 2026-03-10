@@ -1,4 +1,5 @@
 const prisma = require("../config/database");
+const progressService = require("./progressService");
 
 class EnrollmentService {
   async enrollStudent(studentId, courseId) {
@@ -11,14 +12,33 @@ class EnrollmentService {
   }
 
   async getEnrolledCourses(studentId) {
-    return await prisma.enrollments.findMany({
+    const enrollments = await prisma.enrollments.findMany({
       where: {
         student_id: parseInt(studentId, 10),
       },
       include: {
-        course: true,
+        course: {
+          include: {
+            instructor: {
+              select: { full_name: true }
+            }
+          }
+        },
       },
     });
+
+    // Attach progress to each enrollment
+    const withProgress = await Promise.all(
+      enrollments.map(async (enr) => {
+        const progress = await progressService.getCourseProgress(studentId, enr.course_id);
+        return {
+          ...enr,
+          progress,
+        };
+      })
+    );
+
+    return withProgress;
   }
 
   async isExistingEnrollment(studentId, courseId) {

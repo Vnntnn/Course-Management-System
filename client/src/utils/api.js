@@ -85,9 +85,10 @@ export const examAPI = {
 
 // UPLOAD ENDPOINTS
 export const uploadAPI = {
-  uploadImage: async (file) => {
+  uploadImage: async (file, courseId) => {
     const formData = new FormData();
     formData.append('image', file);
+    if (courseId) formData.append('courseId', courseId);
     const response = await fetch('/api/upload', {
       method: 'POST',
       credentials: 'include',
