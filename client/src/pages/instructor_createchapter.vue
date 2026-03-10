@@ -1,12 +1,19 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import Button from '@/assets/button.vue'
 import Contentcontainer from '@/assets/contentcontainer.vue'
 import Inputtext from '@/assets/inputtext.vue'
 import { goBack } from '@/utils/navigation'
+import { contentAPI } from '@/utils/api'
+
+const params = new URLSearchParams(window.location.search)
+const courseId = params.get('courseId')
 
 const lessonName = ref('')
 const lessonDesc = ref('')
+const isCreating = ref(false)
+const error = ref('')
+const success = ref('')
 
 const sections = ref([
   { id: 1, text: '' }
@@ -21,6 +28,47 @@ function addSection() {
 
 function removeSection(index) {
   sections.value.splice(index, 1)
+}
+
+async function createLesson() {
+  error.value = ''
+  success.value = ''
+
+  if (!lessonName.value) {
+    error.value = 'Lesson name is required'
+    return
+  }
+
+  isCreating.value = true
+  try {
+    // Create the lesson
+    const lessonRes = await contentAPI.createLesson({
+      course_id: parseInt(courseId),
+      title: lessonName.value,
+    })
+    const lessonId = lessonRes.data?.id
+
+    // Create topics from sections
+    for (const section of sections.value) {
+      if (section.text.trim()) {
+        await contentAPI.createTopic({
+          lesson_id: lessonId,
+          title: lessonName.value,
+          content_type: 'text',
+          content_body: section.text,
+        })
+      }
+    }
+
+    success.value = 'Lesson created successfully!'
+    lessonName.value = ''
+    lessonDesc.value = ''
+    sections.value = [{ id: 1, text: '' }]
+  } catch (err) {
+    error.value = err.message || 'Failed to create lesson'
+  } finally {
+    isCreating.value = false
+  }
 }
 </script>
 
@@ -103,8 +151,11 @@ Remove
 
 </div>
 
-<Button>
-Create Lesson
+<div v-if="error" class="text-red-500 text-sm">{{ error }}</div>
+<div v-if="success" class="text-green-500 text-sm">{{ success }}</div>
+
+<Button @click="createLesson()" :disabled="isCreating">
+{{ isCreating ? 'Creating...' : 'Create Lesson' }}
 </Button>
 
 </Contentcontainer>

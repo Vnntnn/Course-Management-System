@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuth } from '@/utils/auth'
 
 import Home from '@/pages/home.vue'
 import Login from '@/pages/login.vue'
@@ -32,11 +33,13 @@ const routes = [
   },
   {
     path: '/login',
-    component: Login
+    component: Login,
+    meta: { guestOnly: true }
   },
   {
     path: '/signup',
-    component: Signin
+    component: Signin,
+    meta: { guestOnly: true }
   },
   {
     path: '/user',
@@ -111,6 +114,19 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes
+})
+
+// Auto-logout on login/signup, redirect authenticated / to /coursebrowser
+router.beforeEach(async (to) => {
+  const { isAuthenticated, logout } = useAuth()
+
+  if (to.meta.guestOnly && isAuthenticated.value) {
+    await logout()
+  }
+
+  if (to.path === '/' && isAuthenticated.value) {
+    return '/coursebrowser'
+  }
 })
 
 export default router

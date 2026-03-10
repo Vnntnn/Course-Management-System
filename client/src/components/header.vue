@@ -2,10 +2,13 @@
 import { HugeiconsIcon } from '@hugeicons/vue';
 import * as icons from '@hugeicons/core-free-icons';
 import smallbutton from '@/assets/button.vue';
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 
 import { go } from '@/utils/navigation';
 import { theme, toggleTheme } from '@/utils/theme'
+import { useAuth } from '@/utils/auth'
+
+const { currentUser, isAuthenticated, logout, getCurrentUser } = useAuth();
 
 const classes = computed(() => {
     const base = "flex fixed w-screen justify-between px-8 py-4 items-center shadow-lg z-10"
@@ -18,19 +21,35 @@ const classes = computed(() => {
     return `${base} ${themes[theme.value]}`
 });
 
+const handleLogout = async () => {
+    await logout();
+    go('/');
+};
+
+onMounted(async () => {
+    try {
+        await getCurrentUser();
+    } catch {
+        // Not logged in
+    }
+});
+
 </script>
 
 <template>
     <header :class="classes">
         <h1 class="text-xl font-bold hover:cursor-pointer" @click="go('/')">Course<span class="text-ci-primary uppercase">wind</span></h1>
         <div class="flex gap-4 items-center">
-            <div class="flex gap-4"> <!-- No Account -->
+            <!-- Not logged in -->
+            <div v-if="!isAuthenticated" class="flex gap-4">
                 <smallbutton @click="go('/signup')">Sign Up</smallbutton>
                 <smallbutton variant="primary_border" @click="go('/login')">Log In</smallbutton>
             </div>
-            <div class="flex gap-4"> <!-- Has Account -->
+            <!-- Logged in -->
+            <div v-else class="flex gap-4">
                 <smallbutton variant="primary_border" @click="go('/coursebrowser')">Browse Course</smallbutton>
                 <smallbutton variant="primary_border" size="small_squared" @click="go('/user')"><HugeiconsIcon :icon="icons.UserIcon"/></smallbutton>
+                <smallbutton variant="primary_border" @click="handleLogout">Logout</smallbutton>
             </div>
             <smallbutton variant="primary_border" @click="toggleTheme()">
                 <HugeiconsIcon :icon="icons.Moon02Icon" :size="24" color="currentColor"/>

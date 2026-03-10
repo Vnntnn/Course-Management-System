@@ -4,25 +4,23 @@ import * as icons from '@hugeicons/core-free-icons/index'
 import { go } from '@/utils/navigation'
 import contentcontainer from '@/assets/contentcontainer.vue'
 import { theme } from '@/utils/theme'
-import { computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import Button from '@/assets/button.vue'
 import inputtext from '@/assets/inputtext.vue'
 import course_enrolled from '@/components/course_enrolled.vue'
+import { useAuth } from '@/utils/auth'
+import { enrollmentAPI, courseAPI } from '@/utils/api'
 
-const props = defineProps({
-    username : {
-        type: String,
-        default: 'Mstxz.EXE'
-    },
-    email : {
-        type : String,
-        default: 'mstxzexe@gmail.com'
-    },
-    role : {
-        type : String,
-        default : 'student' // student | instructor
-    }
-})
+const { currentUser, isAuthenticated } = useAuth()
+
+const enrolledCourses = ref([])
+const instructorCourses = ref([])
+const isLoading = ref(false)
+const searchQuery = ref('')
+
+const role = computed(() => currentUser.value?.role || 'student')
+const username = computed(() => currentUser.value?.full_name || 'User')
+const email = computed(() => currentUser.value?.email || '')
 
 const emailClass = computed(() => {
     return theme.value === 'dark'
@@ -31,22 +29,51 @@ const emailClass = computed(() => {
 })
 
 const actionLabel = computed(() => {
-    return props.role === 'instructor'
+    return role.value === 'instructor'
         ? 'Create Course'
         : 'Browse Course'
 })
 
 const actionRoute = computed(() => {
-    return props.role === 'instructor'
-        ? '/coursecreate'
+    return role.value === 'instructor'
+        ? '/coursemanage'
         : '/coursebrowser'
 })
 
 const footerLabel = computed(() => {
-    return props.role === 'instructor'
+    return role.value === 'instructor'
         ? 'Create New Course'
         : 'Find More Course'
 })
+
+const filteredCourses = computed(() => {
+    const courses = role.value === 'instructor' ? instructorCourses.value : enrolledCourses.value
+    if (!searchQuery.value) return courses
+    const q = searchQuery.value.toLowerCase()
+    return courses.filter(c => {
+        const name = c.course?.title || c.title || ''
+        return name.toLowerCase().includes(q)
+    })
+})
+
+const fetchData = async () => {
+    isLoading.value = true
+    try {
+        if (role.value === 'instructor') {
+            const res = await courseAPI.getInstructorCourses()
+            instructorCourses.value = res.data || []
+        } else {
+            const res = await enrollmentAPI.getStudentCourses()
+            enrolledCourses.value = res.data || []
+        }
+    } catch (err) {
+        console.error('Failed to fetch courses', err)
+    } finally {
+        isLoading.value = false
+    }
+}
+
+onMounted(fetchData)
 </script>
 
 <template>
@@ -60,6 +87,7 @@ const footerLabel = computed(() => {
     <p :class="emailClass">
         {{ email }}
     </p>
+    <p class="text-text-400 text-sm mt-1">Role: {{ role }}</p>
 </contentcontainer>
 
 <section class="space-y-5">
@@ -71,7 +99,7 @@ My Course
 <contentcontainer class="h-auto">
 
 <div class="flex justify-center space-x-2">
-    <inputtext input_type="text" input_placeholder="Search Course"/>
+    <inputtext v-model="searchQuery" input_type="text" input_placeholder="Search Course"/>
     <Button type="button" size="small_squared" variant="primary_border">
         <HugeiconsIcon :icon="icons.Search02Icon"/>
     </Button>
@@ -79,7 +107,7 @@ My Course
 
 <!-- no courses -->
 
-<div class="hidden justify-center items-center flex-col gap-2 text-text-400 h-full">
+<div v-if="!isLoading && filteredCourses.length === 0" class="flex justify-center items-center flex-col gap-2 text-text-400 h-full py-8">
 
 You haven't enrolled into any course yet.
 
@@ -96,19 +124,25 @@ class="flex gap-2">
 
 </div>
 
-<div>
+<!-- Loading -->
+<div v-if="isLoading" class="flex justify-center py-8 text-text-400">
+Loading courses...
+</div>
+
+<div v-if="filteredCourses.length > 0">
 
 <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-6">
 
 <course_enrolled
-coursename="Blender 3D Basics"
-instructorname="Mstxz"
-progress="100"
+v-for="item in filteredCourses"
+:key="item.id"
+:coursename="item.course?.title || item.title || 'Untitled'"
+:instructorname="item.course?.instructor?.full_name || item.instructor?.full_name || ''"
+:thumbnail="item.course?.thumbnail_url || item.thumbnail_url || 'https://i.pinimg.com/736x/a2/31/9c/a2319c01c458e70c57ddddbc4c2244b5.jpg'"
+:progress="'0'"
+:role="role"
+:courseId="item.course?.id || item.id"
 />
-
-<course_enrolled progress="20"/>
-<course_enrolled/>
-<course_enrolled/>
 
 </div>
 

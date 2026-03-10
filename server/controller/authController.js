@@ -22,10 +22,11 @@ exports.register = async (req, res) => {
     );
   }
 
-  if (role && role !== ROLES.STUDENT) {
+  const allowedRoles = [ROLES.STUDENT, ROLES.INSTRUCTOR];
+  if (role && !allowedRoles.includes(role)) {
     return sendError(
       res,
-      "Public registration only allows 'student' role",
+      "Public registration only allows 'student' or 'instructor' role",
       HTTP_STATUS.BAD_REQUEST,
     );
   }
@@ -43,17 +44,23 @@ exports.register = async (req, res) => {
       role,
     });
 
-    return sendResponse(
-      res,
-      {
-        id: newUser.id,
-        full_name: newUser.full_name,
-        email: newUser.email,
-        role: newUser.role,
-      },
-      "User registered successfully",
-      HTTP_STATUS.CREATED,
-    );
+    // Auto-login after registration
+    req.logIn(newUser, (loginErr) => {
+      if (loginErr) {
+        console.error("Auto-login after register error:", loginErr);
+      }
+      return sendResponse(
+        res,
+        {
+          id: newUser.id,
+          full_name: newUser.full_name,
+          email: newUser.email,
+          role: newUser.role,
+        },
+        "User registered successfully",
+        HTTP_STATUS.CREATED,
+      );
+    });
   } catch (err) {
     console.error("Register error:", err);
     return sendError(

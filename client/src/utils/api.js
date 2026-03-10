@@ -56,16 +56,15 @@ export const courseAPI = {
   getById: (id) => apiFetch(`/api/courses/${id}`),
   create: (data) => apiFetch('/api/courses/create', { method: 'POST', body: JSON.stringify(data) }),
   update: (id, data) => apiFetch(`/api/courses/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  delete: (id) => apiFetch(`/api/courses/${id}`, { method: 'DELETE' }),
-  getByInstructor: (instructorId) => apiFetch(`/api/courses/instructor/${instructorId}`),
+  delete: (id, confirmDelete = false) => apiFetch(`/api/courses/${id}`, { method: 'DELETE', body: JSON.stringify({ confirm_delete: confirmDelete }) }),
+  getInstructorCourses: () => apiFetch('/api/courses/my-courses'),
 };
 
 // CONTENT ENDPOINTS
 export const contentAPI = {
-  createLesson: (data) => apiFetch('/api/content/lesson', { method: 'POST', body: JSON.stringify(data) }),
-  createTopic: (data) => apiFetch('/api/content/topic', { method: 'POST', body: JSON.stringify(data) }),
-  getCourseLessons: (courseId) => apiFetch(`/api/content/course/${courseId}`),
-  getLessonTopics: (lessonId) => apiFetch(`/api/content/lesson/${lessonId}`),
+  createLesson: (data) => apiFetch('/api/content/lessons', { method: 'POST', body: JSON.stringify(data) }),
+  createTopic: (data) => apiFetch('/api/content/topics', { method: 'POST', body: JSON.stringify(data) }),
+  getCourseLessons: (courseId) => apiFetch(`/api/content/courses/${courseId}/lessons`),
 };
 
 // ENROLLMENT ENDPOINTS
@@ -73,24 +72,22 @@ export const enrollmentAPI = {
   enroll: (data) => apiFetch('/api/enrollments/enroll', { method: 'POST', body: JSON.stringify(data) }),
   getStudentCourses: () => apiFetch('/api/enrollments/my-courses'),
   getCourseStudents: (courseId) => apiFetch(`/api/enrollments/courses/${courseId}/students`),
-  getStudentEnrollments: (studentId) => apiFetch(`/api/enrollments/student/${studentId}`),
 };
 
 // EXAM ENDPOINTS
 export const examAPI = {
-  create: (data) => apiFetch('/api/exams/create', { method: 'POST', body: JSON.stringify(data) }),
-  addQuestion: (data) => apiFetch('/api/exams/question', { method: 'POST', body: JSON.stringify(data) }),
+  create: (data) => apiFetch('/api/exams', { method: 'POST', body: JSON.stringify(data) }),
+  addQuestions: (examId, questions) => apiFetch(`/api/exams/${examId}/questions`, { method: 'POST', body: JSON.stringify({ questions }) }),
   getById: (id) => apiFetch(`/api/exams/${id}`),
-  submit: (data) => apiFetch('/api/exams/submit', { method: 'POST', body: JSON.stringify(data) }),
+  submit: (examId, answers) => apiFetch(`/api/exams/${examId}/submit`, { method: 'POST', body: JSON.stringify({ answers }) }),
   getResults: () => apiFetch('/api/exams/my-results'),
-  getResultById: (id) => apiFetch(`/api/exams/results/${id}`),
 };
 
 // UPLOAD ENDPOINTS
 export const uploadAPI = {
   uploadImage: async (file) => {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('image', file);
     const response = await fetch('/api/upload', {
       method: 'POST',
       credentials: 'include',
@@ -100,3 +97,4 @@ export const uploadAPI = {
     return response.json();
   },
 };
+

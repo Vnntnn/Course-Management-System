@@ -16,7 +16,7 @@ const props = defineProps({
   },
   score: {
     type: String,
-    default: '20'
+    default: '0'
   },
   maxscore: {
     type: String,
@@ -24,7 +24,15 @@ const props = defineProps({
   },
   role: {
     type: String,
-    default: 'instructor' // student | instructor
+    default: 'student'
+  },
+  examId: {
+    type: [Number, String],
+    default: null
+  },
+  courseId: {
+    type: [Number, String],
+    default: null
   }
 })
 
@@ -59,13 +67,7 @@ Exam {{ number }}
 <!-- STUDENT VIEW -->
 <template v-if="role === 'student'">
 
-<p>
-คะแนนที่ดีที่สุด: {{ score }}/{{ maxscore }} ({{ percent }}%)
-</p>
-
-<Progressbar :progress="percent"/>
-
-<Button @click="go('/examdesc')">
+<Button @click="go(`/examdesc?examId=${examId}`)">
 Enter
 </Button>
 
@@ -75,13 +77,13 @@ Enter
 <template v-if="role === 'instructor'">
 
 <div class="flex gap-2">
-<Button @click="go('/exammanage')">
+<Button @click="go(`/exammanage?examId=${examId}`)">
 Manage
 </Button>
 
 <Button
 variant="primary_border"
-@click="go('/examquestion')"
+@click="go(`/examquestion?examId=${examId}`)"
 >
 Question
 </Button>

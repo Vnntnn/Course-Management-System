@@ -14,7 +14,7 @@ const props = defineProps({
     },
     instructorname : {
         type: String,
-        default: 'Manop EXE'
+        default: 'Instructor'
     },
     thumbnail : {
         type: String,
@@ -26,7 +26,11 @@ const props = defineProps({
     },
     role : {
         type: String,
-        default: 'instructor'
+        default: 'student'
+    },
+    courseId: {
+        type: [Number, String],
+        default: null
     }
 })
 
@@ -94,12 +98,12 @@ Progress:
 <Progressbar :progress="progress"/>
 
 <div class="flex gap-2">
-<Button @click="go('/chapterlist')">
+<Button @click="go(`/chapterlist?courseId=${courseId}`)">
 {{ progressBtn }}
 </Button>
 
 <Button
-@click="go('/examlist')"
+@click="go(`/examlist?courseId=${courseId}`)"
 variant="primary_border"
 >
 Exam
@@ -113,19 +117,19 @@ Exam
 
 <div class="flex gap-2">
 
-<Button @click="go('/coursemanage')">
+<Button @click="go(`/coursemanage?courseId=${courseId}`)">
 Manage
 </Button>
 
 <Button
-@click="go('/chapterlist')"
+@click="go(`/chapterlist?courseId=${courseId}`)"
 variant="primary_border"
 >
 Chapter
 </Button>
 
 <Button
-@click="go('/examlist')"
+@click="go(`/examlist?courseId=${courseId}`)"
 variant="primary_border"
 >
 Exam

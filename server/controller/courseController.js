@@ -104,6 +104,24 @@ exports.getAllCourses = async (req, res) => {
   }
 };
 
+exports.getInstructorCourses = async (req, res) => {
+  try {
+    const courses = await courseService.getCoursesByInstructor(req.user.id);
+    return sendResponse(
+      res,
+      courses,
+      "Instructor courses fetched successfully",
+      HTTP_STATUS.OK,
+    );
+  } catch (error) {
+    return sendError(
+      res,
+      "Failed to retrieve instructor courses",
+      HTTP_STATUS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
+
 exports.updateCourse = async (req, res) => {
   const { id } = req.params;
   const { title, description, thumbnail_url } = req.body;

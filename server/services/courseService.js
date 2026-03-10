@@ -26,6 +26,11 @@ class CourseService {
             email: true,
           },
         },
+        lessons: {
+          orderBy: { order_index: 'asc' },
+          include: { topics: { orderBy: { order_index: 'asc' } } },
+        },
+        exams: true,
       },
     });
   }
@@ -41,6 +46,25 @@ class CourseService {
           },
         },
       },
+    });
+  }
+
+  async getCoursesByInstructor(instructorId) {
+    return await prisma.courses.findMany({
+      where: { instructor_id: instructorId },
+      include: {
+        instructor: {
+          select: {
+            id: true,
+            full_name: true,
+            email: true,
+          },
+        },
+        _count: {
+          select: { enrollments: true, lessons: true, exams: true },
+        },
+      },
+      orderBy: { created_at: 'desc' },
     });
   }
 
