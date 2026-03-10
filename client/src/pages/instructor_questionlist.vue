@@ -3,7 +3,7 @@ import Button from '@/assets/button.vue'
 import Contentcontainer from '@/assets/contentcontainer.vue'
 import { go, goBack } from '@/utils/navigation'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import * as icons from '@hugeicons/core-free-icons'
+import * as icons from '@hugeicons/core-free-icons/index'
 </script>
 
 <template>
@@ -22,14 +22,7 @@ Question List
 
 <Button
 class="flex gap-2"
-@click="go('/createquestion')"
->
-
-<HugeiconsIcon :icon="icons.Add01Icon"/>
-
-Create
-
-</Button>
+@click="go('/questioncreate')"><HugeiconsIcon :icon="icons.Add01Icon"/>Create</Button>
 
 </div>
 
