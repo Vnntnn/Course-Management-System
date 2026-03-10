@@ -5,6 +5,7 @@ import Button from '@/assets/button.vue';
 import { go } from '@/utils/navigation';
 import { Type } from '@hugeicons/core-free-icons/index';
 import { computed } from 'vue';
+import Progressbar from '@/assets/progressbar.vue';
 
 
 const props = defineProps({
@@ -50,10 +51,11 @@ const progressBtn = computed(() => {
             <h1 class="text-xl font-bold">{{ coursename }}</h1>
             <p class="flex gap-2"><HugeiconsIcon :icon="icons.User"/>{{ instructorname }}</p>
             <p class="flex gap-2">Progress:<span>{{ `${progress}%` }}</span></p>
-            <div id="progressbar" class="bg-gray-400 w-full h-3 rounded-full">
-                <div class="bg-linear-to-r from-link to-link-light h-full rounded-full" :style="{ width: `${progress}%` }"></div>
+            <Progressbar :progress="progress"/>
+            <div class="flex gap-2">
+                <Button @click="go('/chapterlist')">{{ progressBtn }}</Button>
+                <Button @click="go('/examlist')" variant="primary_border">Exam</Button>
             </div>
-            <Button @click="go('/chapterlist')">{{ progressBtn }}</Button>
         </div>
     </div>
 </template>
