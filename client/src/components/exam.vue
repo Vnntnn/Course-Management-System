@@ -21,6 +21,10 @@ const props = defineProps({
   maxscore: {
     type: String,
     default: '100'
+  },
+  role: {
+    type: String,
+    default: 'instructor' // student | instructor
   }
 })
 
@@ -36,16 +40,55 @@ const classes = computed(() => {
     dark: 'bg-ci-secondary-1 ring-ci-secondary-3'
   }
 
-  return `${base} ${themes[theme.value]}`
-});
+  return `${base} ${themes[theme.value] || themes.light}`
+})
 </script>
 
 <template>
-    <div :class="classes">
-        <h1 class="text-2xl font-semibold">Exam {{ number }}</h1>
-        <p>จำนวนข้อ: {{ count }}</p>
-        <p>คะแนนที่ดีที่สุด: {{ score }}/{{ maxscore }} ({{ percent }}%)</p>
-        <Progressbar :progress="percent"/>
-        <Button @click="go('/examdesc')">Enter</Button>
-    </div>
+
+<div :class="classes">
+
+<h1 class="text-2xl font-semibold">
+Exam {{ number }}
+</h1>
+
+<p>
+จำนวนข้อ: {{ count }}
+</p>
+
+<!-- STUDENT VIEW -->
+<template v-if="role === 'student'">
+
+<p>
+คะแนนที่ดีที่สุด: {{ score }}/{{ maxscore }} ({{ percent }}%)
+</p>
+
+<Progressbar :progress="percent"/>
+
+<Button @click="go('/examdesc')">
+Enter
+</Button>
+
+</template>
+
+<!-- INSTRUCTOR VIEW -->
+<template v-if="role === 'instructor'">
+
+<div class="flex gap-2">
+<Button @click="go('/exammanage')">
+Manage
+</Button>
+
+<Button
+variant="primary_border"
+@click="go('/examquestion')"
+>
+Question
+</Button>
+</div>
+
+</template>
+
+</div>
+
 </template>
