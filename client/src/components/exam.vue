@@ -36,11 +36,11 @@ const classes = computed(() => {
   }
 
   return `${base} ${themes[theme.value]}`
-})
+});
 </script>
 
 <template>
-    <div  class="p-4 rounded-lg" :class="classes">
+    <div :class="classes">
         <h1 class="text-2xl font-semibold">Exam {{ number }}</h1>
         <p>จำนวนข้อ: {{ count }}</p>
         <p>คะแนนที่ดีที่สุด: {{ score }}/{{ maxscore }} ({{ percent }}%)</p>

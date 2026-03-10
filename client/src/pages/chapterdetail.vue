@@ -8,8 +8,6 @@ import { go, goBack } from '@/utils/navigation';
 
 <template>
     <main class="mt-24">
-        <Button @click="go('/chapterlist')">Go Back</Button>
-
         <Button @click="goBack()">Go Back</Button>
 
         <h1>Chapter Name</h1>

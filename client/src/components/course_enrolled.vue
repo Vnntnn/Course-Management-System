@@ -3,9 +3,9 @@ import { HugeiconsIcon } from '@hugeicons/vue';
 import * as icons from '@hugeicons/core-free-icons'
 import Button from '@/assets/button.vue';
 import { go } from '@/utils/navigation';
-import { Type } from '@hugeicons/core-free-icons/index';
 import { computed } from 'vue';
 import Progressbar from '@/assets/progressbar.vue';
+import { theme } from '@/utils/theme';
 
 
 const props = defineProps({
@@ -42,10 +42,21 @@ const progressBtn = computed(() => {
 
     return statusOfBtn;
 })
+
+const classes = computed(() => {
+    const base = 'rounded-xl hover:ring-2'
+
+      const themes = {
+        light: 'bg-ci-secondary-4 ring-ci-secondary-1',
+        dark: 'bg-ci-secondary-1 ring-ci-secondary-3'
+      }
+
+      return `${base} ${themes[theme.value]}`
+})
 </script>
 
 <template>
-    <div class="bg-ci-secondary-1 rounded-xl hover:ring-2 ring-ci-secondary-3">
+    <div :class="classes">
         <img :src="thumbnail" alt="" class="rounded-t-xl w-full h-50 object-cover object-center">
         <div class="p-4 space-y-2">
             <h1 class="text-xl font-bold">{{ coursename }}</h1>

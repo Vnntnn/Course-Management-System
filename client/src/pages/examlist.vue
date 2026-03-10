@@ -3,7 +3,6 @@ import Button from '@/assets/button.vue';
 import Contentcontainer from '@/assets/contentcontainer.vue';
 import Exam from '@/components/exam.vue';
 import { goBack } from '@/utils/navigation';
-import exam from '@/components/exam.vue';
 </script>
 
 <template>
