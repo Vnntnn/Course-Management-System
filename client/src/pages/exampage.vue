@@ -1,13 +1,13 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import Contentcontainer from '@/assets/contentcontainer.vue'
-import Button from '@/assets/button.vue'
+import { ref, onMounted } from 'vue'
+import Contentcontainer from '@/assets/contentcontainer.vue';
+import Button from '@/assets/button.vue';
+import { go, goBack } from '@/utils/navigation';
 import { examAPI } from '@/utils/api'
+import { useAuth } from '@/utils/auth'
 
-const route = useRoute()
-const router = useRouter()
-const examId = computed(() => route.params.examId)
+const params = new URLSearchParams(window.location.search)
+const examId = params.get('examId')
 
 const exam = ref(null)
 const questions = ref([])
@@ -15,6 +15,8 @@ const answers = ref({})
 const isLoading = ref(false)
 const isSubmitting = ref(false)
 const error = ref('')
+const isEnrolled = ref(false)
+const enrollChecked = ref(false)
 
 const fetchExam = async () => {
     if (!examId.value) return
@@ -24,8 +26,15 @@ const fetchExam = async () => {
         const res = await examAPI.getById(examId.value)
         exam.value = res.data
         questions.value = res.data?.questions || []
+        isEnrolled.value = true
+        enrollChecked.value = true
     } catch (err) {
-        error.value = err.message || 'Failed to load exam'
+        if (err.status === 403) {
+            isEnrolled.value = false
+            enrollChecked.value = true
+        } else {
+            error.value = err.message || 'Failed to load exam'
+        }
     } finally {
         isLoading.value = false
     }
@@ -40,13 +49,12 @@ const answeredCount = computed(() => Object.keys(answers.value).length)
 const submitExam = async () => {
     error.value = ''
 
-    // Build answers array
+    // Build answers array: [{question_id, selected_option}]
     const answerList = questions.value.map(q => ({
         question_id: q.id,
         selected_option: answers.value[q.id] || ''
     }))
 
-    // Check if all answered
     const unanswered = answerList.filter(a => !a.selected_option)
     if (unanswered.length > 0) {
         if (!confirm(`You have ${unanswered.length} unanswered question(s). Submit anyway?`)) {
@@ -56,18 +64,10 @@ const submitExam = async () => {
 
     isSubmitting.value = true
     try {
-        const res = await examAPI.submit(examId.value, answerList)
-        const result = res.data?.summary || res.data
-        // Navigate to result page
-        router.push({
-            name: 'ExamResult',
-            params: { examId: examId.value },
-            query: { 
-                score: result.score || 0, 
-                total: result.total || questions.value.length,
-                percentage: result.percentage || 0
-            }
-        })
+        const res = await examAPI.submit(examId, answerList)
+        const result = res.data
+        // Navigate to result page with score
+        go(`/examresult?score=${result.score || 0}&maxscore=${questions.value.length}&examId=${examId}`)
     } catch (err) {
         error.value = err.message || 'Failed to submit exam'
     } finally {
@@ -77,7 +77,13 @@ const submitExam = async () => {
 
 const goBack = () => router.push(`/exam/${examId.value}`)
 
-onMounted(fetchExam)
+onMounted(async () => {
+    if (role.value === 'instructor') {
+        isEnrolled.value = true
+        enrollChecked.value = true
+    }
+    await fetchExam()
+})
 </script>
 
 <template>
@@ -88,6 +94,15 @@ onMounted(fetchExam)
 
         <div v-if="isLoading" class="text-text-400 text-center py-8">Loading exam...</div>
         <div v-if="error" class="text-red-500 text-center py-4">{{ error }}</div>
+
+        <!-- Not enrolled guard -->
+        <Contentcontainer v-if="enrollChecked && !isEnrolled" class="text-center py-12 space-y-4">
+            <h2 class="text-2xl font-bold">🔒 Enrollment Required</h2>
+            <p class="text-text-400">You must enroll in this course before taking exams.</p>
+            <Button @click="go('/coursebrowser')">
+                Browse Courses
+            </Button>
+        </Contentcontainer>
 
         <template v-if="exam && !isLoading">
             <div class="flex justify-between items-center">

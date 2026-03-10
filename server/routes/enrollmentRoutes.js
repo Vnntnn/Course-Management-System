@@ -38,5 +38,11 @@ router.get(
   isInstructor,
   enrollmentController.getStudentsInCourse,
 );
+// Check if current user is enrolled in a specific course
+router.get(
+  "/check/:courseId",
+  ensureAuthenticated,
+  enrollmentController.checkEnrollment,
+);
 
 module.exports = router;

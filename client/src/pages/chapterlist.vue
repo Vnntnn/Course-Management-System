@@ -20,6 +20,25 @@ const course = ref(null)
 const lessons = ref([])
 const isLoading = ref(false)
 const error = ref('')
+const isEnrolled = ref(false)
+const enrollChecked = ref(false)
+
+const checkAccess = async () => {
+    // Instructors always have access
+    if (role.value === 'instructor') {
+        isEnrolled.value = true
+        enrollChecked.value = true
+        return
+    }
+    if (!courseId) return
+    try {
+        const res = await enrollmentAPI.checkEnrollment(courseId)
+        isEnrolled.value = res.data?.enrolled === true
+    } catch {
+        isEnrolled.value = false
+    }
+    enrollChecked.value = true
+}
 
 const fetchCourse = async () => {
     if (!courseId.value) return

@@ -1,5 +1,6 @@
 const examService = require("../services/examService");
 const courseService = require("../services/courseService");
+const enrollmentService = require("../services/enrollmentService");
 const { sendResponse, sendError } = require("../utils/responseHelper");
 const { HTTP_STATUS } = require("../utils/constants");
 
@@ -211,6 +212,16 @@ exports.getExamForStudent = async (req, res) => {
     const exam = await examService.getExamForStudent(exam_id);
 
     if (!exam) return sendError(res, "Exam not found", HTTP_STATUS.NOT_FOUND);
+
+    // Check enrollment (skip for instructors who own the course)
+    const course = await courseService.getCourseById(exam.course_id);
+    if (course && course.instructor_id !== req.user.id) {
+      const enrolled = await enrollmentService.isExistingEnrollment(req.user.id, exam.course_id);
+      if (!enrolled) {
+        return sendError(res, "You must enroll in this course first", HTTP_STATUS.FORBIDDEN);
+      }
+    }
+
     return sendResponse(res, exam, "Get exam successfully.", HTTP_STATUS.OK);
   } catch (error) {
     return sendError(res, error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR);
@@ -226,6 +237,12 @@ exports.submitExam = async (req, res) => {
     const exam = await examService.getExamById(exam_id);
     if (!exam) {
       return sendError(res, "Exam not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    // Check enrollment before allowing submit
+    const enrolled = await enrollmentService.isExistingEnrollment(studentId, exam.course_id);
+    if (!enrolled) {
+      return sendError(res, "You must enroll in this course first", HTTP_STATUS.FORBIDDEN);
     }
 
     if (!Array.isArray(answers)) {

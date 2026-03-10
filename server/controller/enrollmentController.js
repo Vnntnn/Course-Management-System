@@ -157,3 +157,27 @@ exports.getStudentsInCourse = async (req, res) => {
     );
   }
 };
+
+exports.checkEnrollment = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const studentId = req.user.id;
+
+    const enrolled = await enrollmentService.isExistingEnrollment(
+      studentId,
+      courseId,
+    );
+    return sendResponse(
+      res,
+      { enrolled },
+      "Enrollment status checked",
+      HTTP_STATUS.OK,
+    );
+  } catch (error) {
+    return sendError(
+      res,
+      "Failed to check enrollment",
+      HTTP_STATUS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};

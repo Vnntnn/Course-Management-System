@@ -111,10 +111,9 @@ export const contentAPI = {
 
 // ENROLLMENT ENDPOINTS
 export const enrollmentAPI = {
-  enroll: (data) => { clearCache('/api/enrollments'); return apiFetch('/api/enrollments/enroll', { method: 'POST', body: JSON.stringify(data) }); },
-  getStudentCourses: () => cachedGet('/api/enrollments/my-courses'),
-  getCourseStudents: (courseId) => cachedGet(`/api/enrollments/courses/${courseId}/students`),
-  checkEnrollment: (courseId) => cachedGet(`/api/enrollments/check/${courseId}`),
+  enroll: (data) => apiFetch('/api/enrollments/enroll', { method: 'POST', body: JSON.stringify(data) }),
+  getStudentCourses: () => apiFetch('/api/enrollments/my-courses'),
+  getCourseStudents: (courseId) => apiFetch(`/api/enrollments/courses/${courseId}/students`),
 };
 
 // EXAM ENDPOINTS

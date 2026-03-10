@@ -13,6 +13,7 @@ const lessonId = computed(() => route.params.lessonId)
 
 const { currentUser } = useAuth()
 const isStudent = computed(() => currentUser.value?.role === 'student')
+const role = computed(() => currentUser.value?.role || 'student')
 
 const lesson = ref(null)
 const topics = ref([])
@@ -21,6 +22,22 @@ const error = ref('')
 
 // Track completed topics during this session
 const completedTopics = ref(new Set())
+
+const checkAccess = async () => {
+    if (role.value === 'instructor') {
+        isEnrolled.value = true
+        enrollChecked.value = true
+        return
+    }
+    if (!courseId) return
+    try {
+        const res = await enrollmentAPI.checkEnrollment(courseId)
+        isEnrolled.value = res.data?.enrolled === true
+    } catch {
+        isEnrolled.value = false
+    }
+    enrollChecked.value = true
+}
 
 const fetchLesson = async () => {
     if (!courseId.value || !lessonId.value) return
@@ -85,12 +102,12 @@ onMounted(fetchLesson)
         <div v-if="isLoading" class="text-text-400 text-center py-8">Loading...</div>
         <div v-if="error" class="text-red-500 text-center py-4">{{ error }}</div>
 
-        <template v-if="lesson">
-            <h1 class="text-4xl font-bold">{{ lesson.title }}</h1>
+            <template v-if="lesson">
+                <h1 class="text-4xl font-bold">{{ lesson.title }}</h1>
 
-            <Contentcontainer v-if="topics.length === 0" class="text-center py-8 text-text-400">
-                No content for this lesson yet.
-            </Contentcontainer>
+                <Contentcontainer v-if="topics.length === 0" class="text-center py-8 text-text-400">
+                    No content for this lesson yet.
+                </Contentcontainer>
 
             <Contentcontainer
                 v-for="(topic, index) in topics"
@@ -118,10 +135,9 @@ onMounted(fetchLesson)
                     ></iframe>
                 </div>
 
-                <!-- Code content -->
-                <div v-else-if="topic.content_type === 'code'">
-                    <pre class="bg-ci-secondary-1 p-4 rounded-lg overflow-x-auto"><code>{{ topic.content_body }}</code></pre>
-                </div>
+                    <div v-else-if="topic.content_type === 'code'">
+                        <pre class="bg-ci-secondary-1 p-4 rounded-lg overflow-x-auto"><code>{{ topic.content_body }}</code></pre>
+                    </div>
 
                 <!-- Fallback -->
                 <div v-else class="whitespace-pre-wrap">
