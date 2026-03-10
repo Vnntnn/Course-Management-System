@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { HugeiconsIcon } from '@hugeicons/vue'
-import * as icons from '@hugeicons/core-free-icons/index'
+import { HugeiconsIcon, ViewIcon, ViewOffSlashIcon } from '@/utils/icons'
+const icons = { ViewIcon, ViewOffSlashIcon }
 
 const props = defineProps({
     modelValue: {

@@ -16,19 +16,30 @@ require("./config/passport")(passport);
 // Middleware
 app.use(cors({
   credentials: true,
-  origin: ['http://localhost:5173', 'http://localhost:5000'],
+  origin: function(origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc)
+    // Or from localhost/127.0.0.1 on any port
+    if (!origin || /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+      callback(null, true);
+    } else {
+      callback(null, true); // Allow all for development
+    }
+  },
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Session middleware - auto-generate secret if not provided
 const SESSION_SECRET = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
 app.use(
   session({
     secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false },
+    cookie: { 
+      secure: false,
+      sameSite: 'lax',
+      httpOnly: true,
+    },
   }),
 );
 

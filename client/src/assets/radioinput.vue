@@ -15,9 +15,6 @@ const classes = computed(() => {
 
     return `${base} ${variant}`
 });
-
-console.log(props.value);
-
 </script>
 
 <template>

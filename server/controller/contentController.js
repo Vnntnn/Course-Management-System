@@ -45,6 +45,55 @@ exports.createLesson = async (req, res) => {
   }
 };
 
+exports.updateLesson = async (req, res) => {
+  const { lessonId } = req.params;
+  const { title } = req.body;
+
+  try {
+    const lesson = await contentService.getLessonByIdWithCourse(lessonId);
+    if (!lesson) {
+      return sendError(res, "Lesson not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    if (lesson.course.instructor_id !== req.user.id) {
+      return sendError(
+        res,
+        "You do not have permission to update this lesson",
+        HTTP_STATUS.FORBIDDEN,
+      );
+    }
+
+    const updated = await contentService.updateLesson(lessonId, { title });
+    return sendResponse(res, updated, "Lesson updated successfully", HTTP_STATUS.OK);
+  } catch (error) {
+    return sendError(res, "Error updating lesson", HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+};
+
+exports.deleteLesson = async (req, res) => {
+  const { lessonId } = req.params;
+
+  try {
+    const lesson = await contentService.getLessonByIdWithCourse(lessonId);
+    if (!lesson) {
+      return sendError(res, "Lesson not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    if (lesson.course.instructor_id !== req.user.id) {
+      return sendError(
+        res,
+        "You do not have permission to delete this lesson",
+        HTTP_STATUS.FORBIDDEN,
+      );
+    }
+
+    await contentService.deleteLesson(lessonId);
+    return sendResponse(res, null, "Lesson deleted successfully", HTTP_STATUS.OK);
+  } catch (error) {
+    return sendError(res, "Error deleting lesson", HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+};
+
 exports.createTopic = async (req, res) => {
   const { lesson_id, title, content_body, content_type } = req.body;
 
@@ -89,6 +138,57 @@ exports.createTopic = async (req, res) => {
       "Error creating topic",
       HTTP_STATUS.INTERNAL_SERVER_ERROR,
     );
+  }
+};
+
+exports.updateTopic = async (req, res) => {
+  const { topicId } = req.params;
+  const { title, content_body, content_type } = req.body;
+
+  try {
+    const topic = await contentService.getTopicById(topicId);
+    if (!topic) {
+      return sendError(res, "Topic not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    const lesson = await contentService.getLessonByIdWithCourse(topic.lesson_id);
+    if (lesson.course.instructor_id !== req.user.id) {
+      return sendError(
+        res,
+        "You do not have permission to update this topic",
+        HTTP_STATUS.FORBIDDEN,
+      );
+    }
+
+    const updated = await contentService.updateTopic(topicId, { title, content_body, content_type });
+    return sendResponse(res, updated, "Topic updated successfully", HTTP_STATUS.OK);
+  } catch (error) {
+    return sendError(res, "Error updating topic", HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+};
+
+exports.deleteTopic = async (req, res) => {
+  const { topicId } = req.params;
+
+  try {
+    const topic = await contentService.getTopicById(topicId);
+    if (!topic) {
+      return sendError(res, "Topic not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    const lesson = await contentService.getLessonByIdWithCourse(topic.lesson_id);
+    if (lesson.course.instructor_id !== req.user.id) {
+      return sendError(
+        res,
+        "You do not have permission to delete this topic",
+        HTTP_STATUS.FORBIDDEN,
+      );
+    }
+
+    await contentService.deleteTopic(topicId);
+    return sendResponse(res, null, "Topic deleted successfully", HTTP_STATUS.OK);
+  } catch (error) {
+    return sendError(res, "Error deleting topic", HTTP_STATUS.INTERNAL_SERVER_ERROR);
   }
 };
 
