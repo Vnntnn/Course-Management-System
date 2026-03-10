@@ -1,17 +1,20 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { HugeiconsIcon } from '@hugeicons/vue';
+import { ref, onMounted, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import * as icons from '@hugeicons/core-free-icons/index'
-import Button from '@/assets/button.vue';
-import Contentcontainer from '@/assets/contentcontainer.vue';
-import { go, goBack } from '@/utils/navigation';
+import Button from '@/assets/button.vue'
+import Contentcontainer from '@/assets/contentcontainer.vue'
 import { courseAPI, enrollmentAPI } from '@/utils/api'
 import { useAuth } from '@/utils/auth'
 
-const params = new URLSearchParams(window.location.search)
-const courseId = params.get('courseId')
+const route = useRoute()
+const router = useRouter()
+const courseId = computed(() => route.params.courseId)
 
 const { currentUser } = useAuth()
+const isStudent = computed(() => currentUser.value?.role === 'student')
+
 const course = ref(null)
 const isLoading = ref(false)
 const isEnrolling = ref(false)
@@ -19,10 +22,11 @@ const error = ref('')
 const enrollSuccess = ref('')
 
 const fetchCourse = async () => {
-    if (!courseId) return
+    if (!courseId.value) return
     isLoading.value = true
+    error.value = ''
     try {
-        const res = await courseAPI.getById(courseId)
+        const res = await courseAPI.getById(courseId.value)
         course.value = res.data
     } catch (err) {
         error.value = err.message || 'Failed to load course'
@@ -32,16 +36,20 @@ const fetchCourse = async () => {
 }
 
 const handleEnroll = async () => {
+    if (!isStudent.value) {
+        router.push(`/course/${courseId.value}/chapters`)
+        return
+    }
+    
     isEnrolling.value = true
     error.value = ''
     try {
-        await enrollmentAPI.enroll({ course_id: parseInt(courseId) })
+        await enrollmentAPI.enroll({ course_id: parseInt(courseId.value) })
         enrollSuccess.value = 'Enrolled successfully!'
-        // Navigate to the chapter list
-        setTimeout(() => go(`/chapterlist?courseId=${courseId}`), 1000)
+        setTimeout(() => router.push(`/course/${courseId.value}/chapters`), 1000)
     } catch (err) {
         if (err.message?.includes('Already enrolled')) {
-            go(`/chapterlist?courseId=${courseId}`)
+            router.push(`/course/${courseId.value}/chapters`)
         } else {
             error.value = err.message || 'Failed to enroll'
         }
@@ -50,12 +58,13 @@ const handleEnroll = async () => {
     }
 }
 
+const goBack = () => router.back()
+
 onMounted(fetchCourse)
 </script>
 
 <template>
     <main class="mt-24 px-5 space-y-5">
-
         <Button variant="primary_border" @click="goBack()">
             ← Back
         </Button>
@@ -82,15 +91,15 @@ onMounted(fetchCourse)
 
                     <div v-if="enrollSuccess" class="text-green-500">{{ enrollSuccess }}</div>
 
-                    <div class="flex gap-3">
-                        <Button @click="handleEnroll" :disabled="isEnrolling">
+                    <div class="flex gap-3 flex-wrap">
+                        <Button v-if="isStudent" @click="handleEnroll" :disabled="isEnrolling">
                             <HugeiconsIcon :icon="icons.Book02Icon" :size="18"/>
-                            {{ isEnrolling ? 'Enrolling...' : 'Enroll' }}
+                            {{ isEnrolling ? 'Enrolling...' : 'Enroll & Start Learning' }}
                         </Button>
-                        <Button variant="primary_border" @click="go(`/chapterlist?courseId=${courseId}`)">
+                        <Button variant="primary_border" @click="router.push(`/course/${courseId}/chapters`)">
                             View Lessons
                         </Button>
-                        <Button variant="primary_border" @click="go(`/examlist?courseId=${courseId}`)">
+                        <Button variant="primary_border" @click="router.push(`/course/${courseId}/exams`)">
                             View Exams
                         </Button>
                     </div>
@@ -101,7 +110,8 @@ onMounted(fetchCourse)
             <Contentcontainer v-if="course.lessons?.length > 0" class="space-y-3">
                 <h2 class="text-2xl font-bold">Course Content</h2>
                 <div v-for="(lesson, index) in course.lessons" :key="lesson.id"
-                    class="p-3 rounded-lg bg-ci-secondary-1 flex justify-between items-center">
+                    class="p-3 rounded-lg bg-ci-secondary-1 flex justify-between items-center cursor-pointer hover:ring-2 ring-ci-secondary-3"
+                    @click="router.push(`/course/${courseId}/chapter/${lesson.id}`)">
                     <span>{{ index + 1 }}. {{ lesson.title }}</span>
                     <span class="text-text-400 text-sm">{{ lesson.topics?.length || 0 }} topics</span>
                 </div>

@@ -63,7 +63,11 @@ export const courseAPI = {
 // CONTENT ENDPOINTS
 export const contentAPI = {
   createLesson: (data) => apiFetch('/api/content/lessons', { method: 'POST', body: JSON.stringify(data) }),
+  updateLesson: (lessonId, data) => apiFetch(`/api/content/lessons/${lessonId}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteLesson: (lessonId) => apiFetch(`/api/content/lessons/${lessonId}`, { method: 'DELETE' }),
   createTopic: (data) => apiFetch('/api/content/topics', { method: 'POST', body: JSON.stringify(data) }),
+  updateTopic: (topicId, data) => apiFetch(`/api/content/topics/${topicId}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteTopic: (topicId) => apiFetch(`/api/content/topics/${topicId}`, { method: 'DELETE' }),
   getCourseLessons: (courseId) => apiFetch(`/api/content/courses/${courseId}/lessons`),
 };
 
@@ -77,8 +81,13 @@ export const enrollmentAPI = {
 // EXAM ENDPOINTS
 export const examAPI = {
   create: (data) => apiFetch('/api/exams', { method: 'POST', body: JSON.stringify(data) }),
+  update: (examId, data) => apiFetch(`/api/exams/${examId}`, { method: 'PUT', body: JSON.stringify(data) }),
+  delete: (examId) => apiFetch(`/api/exams/${examId}`, { method: 'DELETE' }),
   addQuestions: (examId, questions) => apiFetch(`/api/exams/${examId}/questions`, { method: 'POST', body: JSON.stringify({ questions }) }),
+  updateQuestion: (questionId, data) => apiFetch(`/api/exams/questions/${questionId}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteQuestion: (questionId) => apiFetch(`/api/exams/questions/${questionId}`, { method: 'DELETE' }),
   getById: (id) => apiFetch(`/api/exams/${id}`),
+  getByCourse: (courseId) => apiFetch(`/api/exams/course/${courseId}`),
   submit: (examId, answers) => apiFetch(`/api/exams/${examId}/submit`, { method: 'POST', body: JSON.stringify({ answers }) }),
   getResults: () => apiFetch('/api/exams/my-results'),
 };

@@ -1,12 +1,13 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import Contentcontainer from '@/assets/contentcontainer.vue';
-import Button from '@/assets/button.vue';
-import { go, goBack } from '@/utils/navigation';
+import { ref, onMounted, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import Contentcontainer from '@/assets/contentcontainer.vue'
+import Button from '@/assets/button.vue'
 import { examAPI } from '@/utils/api'
 
-const params = new URLSearchParams(window.location.search)
-const examId = params.get('examId')
+const route = useRoute()
+const router = useRouter()
+const examId = computed(() => route.params.examId)
 
 const exam = ref(null)
 const questions = ref([])
@@ -16,10 +17,11 @@ const isSubmitting = ref(false)
 const error = ref('')
 
 const fetchExam = async () => {
-    if (!examId) return
+    if (!examId.value) return
     isLoading.value = true
+    error.value = ''
     try {
-        const res = await examAPI.getById(examId)
+        const res = await examAPI.getById(examId.value)
         exam.value = res.data
         questions.value = res.data?.questions || []
     } catch (err) {
@@ -33,10 +35,12 @@ const selectAnswer = (questionId, option) => {
     answers.value[questionId] = option
 }
 
+const answeredCount = computed(() => Object.keys(answers.value).length)
+
 const submitExam = async () => {
     error.value = ''
 
-    // Build answers array: [{question_id, selected_option}]
+    // Build answers array
     const answerList = questions.value.map(q => ({
         question_id: q.id,
         selected_option: answers.value[q.id] || ''
@@ -52,10 +56,18 @@ const submitExam = async () => {
 
     isSubmitting.value = true
     try {
-        const res = await examAPI.submit(examId, answerList)
-        const result = res.data
-        // Navigate to result page with score
-        go(`/examresult?score=${result.score || 0}&maxscore=${questions.value.length}&examId=${examId}`)
+        const res = await examAPI.submit(examId.value, answerList)
+        const result = res.data?.summary || res.data
+        // Navigate to result page
+        router.push({
+            name: 'ExamResult',
+            params: { examId: examId.value },
+            query: { 
+                score: result.score || 0, 
+                total: result.total || questions.value.length,
+                percentage: result.percentage || 0
+            }
+        })
     } catch (err) {
         error.value = err.message || 'Failed to submit exam'
     } finally {
@@ -63,20 +75,30 @@ const submitExam = async () => {
     }
 }
 
+const goBack = () => router.back()
+
 onMounted(fetchExam)
 </script>
 
 <template>
     <main class="mt-24 mx-5 space-y-5">
-
-        <Button variant="primary_border" @click="goBack()">← Back</Button>
+        <Button variant="primary_border" @click="goBack()">
+            ← Exit Exam
+        </Button>
 
         <div v-if="isLoading" class="text-text-400 text-center py-8">Loading exam...</div>
         <div v-if="error" class="text-red-500 text-center py-4">{{ error }}</div>
 
         <template v-if="exam && !isLoading">
-            <h1 class="text-3xl font-bold">{{ exam.title }}</h1>
-            <p class="text-text-400">{{ questions.length }} question(s)</p>
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold">{{ exam.title }}</h1>
+                    <p class="text-text-400">{{ questions.length }} question(s)</p>
+                </div>
+                <div class="text-text-400">
+                    Answered: {{ answeredCount }} / {{ questions.length }}
+                </div>
+            </div>
 
             <Contentcontainer
                 v-for="(q, index) in questions"
@@ -104,15 +126,18 @@ onMounted(fetchExam)
                             :checked="answers[q.id] === opt"
                             class="sr-only"
                         />
-                        <span class="font-bold">{{ opt }})</span>
+                        <span class="font-bold w-6">{{ opt }})</span>
                         <span>{{ q[`option_${opt.toLowerCase()}`] }}</span>
                     </label>
                 </div>
             </Contentcontainer>
 
-            <div class="pb-8">
+            <div class="pb-8 flex gap-3">
                 <Button @click="submitExam" :disabled="isSubmitting" class="flex gap-2">
                     {{ isSubmitting ? 'Submitting...' : 'Submit Exam' }}
+                </Button>
+                <Button variant="primary_border" @click="goBack()">
+                    Cancel
                 </Button>
             </div>
         </template>

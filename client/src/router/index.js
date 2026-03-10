@@ -1,137 +1,254 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuth } from '@/utils/auth'
 
+// Public Pages
 import Home from '@/pages/home.vue'
 import Login from '@/pages/login.vue'
 import Signin from '@/pages/signin.vue'
-import userdashboard from '@/pages/userdashboard.vue'
 
-import coursebrowser from '@/pages/browsecourse.vue'
-import coursepage from '@/pages/coursepage.vue'
+// User Pages
+import UserDashboard from '@/pages/userdashboard.vue'
+import CourseBrowser from '@/pages/browsecourse.vue'
+import CoursePage from '@/pages/coursepage.vue'
 
-import Chapterlist from '@/pages/chapterlist.vue'
-import Chapterdetail from '@/pages/chapterdetail.vue'
+// Chapter/Lesson Pages
+import ChapterList from '@/pages/chapterlist.vue'
+import ChapterDetail from '@/pages/chapterdetail.vue'
 
-import Examlist from '@/pages/examlist.vue'
-import Examdescription from '@/pages/examdescription.vue'
-import Exampage from '@/pages/exampage.vue'
-import Examresult from '@/pages/examresult.vue'
+// Exam Pages
+import ExamList from '@/pages/examlist.vue'
+import ExamDescription from '@/pages/examdescription.vue'
+import ExamPage from '@/pages/exampage.vue'
+import ExamResult from '@/pages/examresult.vue'
 
 // Instructor Pages
-import instructor_courselist from '@/pages/instructor_courselist.vue'
-import instructor_createchapter from '@/pages/instructor_createchapter.vue'
-import instructor_createquestion from '@/pages/instructor_createquestion.vue'
-import instructor_editchapter from '@/pages/instructor_editchapter.vue'
-import instructor_editcourse from '@/pages/instructor_editcourse.vue'
-import instructor_editexam from '@/pages/instructor_editexam.vue'
-import instructor_editquestion from '@/pages/instructor_editquestion.vue'
-import instructor_questionlist from '@/pages/instructor_questionlist.vue'
+import InstructorCourseList from '@/pages/instructor_courselist.vue'
+import InstructorCreateChapter from '@/pages/instructor_createchapter.vue'
+import InstructorCreateQuestion from '@/pages/instructor_createquestion.vue'
+import InstructorEditChapter from '@/pages/instructor_editchapter.vue'
+import InstructorEditCourse from '@/pages/instructor_editcourse.vue'
+import InstructorEditExam from '@/pages/instructor_editexam.vue'
+import InstructorEditQuestion from '@/pages/instructor_editquestion.vue'
+import InstructorQuestionList from '@/pages/instructor_questionlist.vue'
 
 const routes = [
+  // Public Routes
   {
     path: '/',
-    component: Home
+    name: 'Home',
+    component: Home,
+    meta: { public: true }
   },
   {
     path: '/login',
+    name: 'Login',
     component: Login,
-    meta: { guestOnly: true }
+    meta: { guestOnly: true, public: true }
   },
   {
     path: '/signup',
+    name: 'Signup',
     component: Signin,
-    meta: { guestOnly: true }
-  },
-  {
-    path: '/user',
-    component: userdashboard
+    meta: { guestOnly: true, public: true }
   },
 
+  // User Routes (requires auth)
   {
-    path: '/coursebrowser',
-    component: coursebrowser
+    path: '/dashboard',
+    name: 'UserDashboard',
+    component: UserDashboard,
+    meta: { requiresAuth: true }
   },
   {
-    path: '/course',
-    component: coursepage
+    path: '/browse',
+    name: 'CourseBrowser',
+    component: CourseBrowser,
+    meta: { requiresAuth: true }
+  },
+  
+  // Course Routes
+  {
+    path: '/course/:courseId',
+    name: 'CoursePage',
+    component: CoursePage,
+    meta: { requiresAuth: true },
+    props: true
+  },
+  {
+    path: '/course/:courseId/chapters',
+    name: 'ChapterList',
+    component: ChapterList,
+    meta: { requiresAuth: true },
+    props: true
+  },
+  {
+    path: '/course/:courseId/chapter/:lessonId',
+    name: 'ChapterDetail',
+    component: ChapterDetail,
+    meta: { requiresAuth: true },
+    props: true
   },
 
+  // Exam Routes
   {
-    path: '/chapterlist',
-    component: Chapterlist
+    path: '/course/:courseId/exams',
+    name: 'ExamList',
+    component: ExamList,
+    meta: { requiresAuth: true },
+    props: true
   },
   {
-    path: '/details',
-    component: Chapterdetail
+    path: '/exam/:examId',
+    name: 'ExamDescription',
+    component: ExamDescription,
+    meta: { requiresAuth: true },
+    props: true
+  },
+  {
+    path: '/exam/:examId/take',
+    name: 'ExamPage',
+    component: ExamPage,
+    meta: { requiresAuth: true },
+    props: true
+  },
+  {
+    path: '/exam/:examId/result',
+    name: 'ExamResult',
+    component: ExamResult,
+    meta: { requiresAuth: true },
+    props: true
   },
 
+  // Instructor Routes
   {
-    path: '/examlist',
-    component: Examlist
+    path: '/instructor/courses',
+    name: 'InstructorCourseList',
+    component: InstructorCourseList,
+    meta: { requiresAuth: true, instructorOnly: true }
   },
   {
-    path: '/examdesc',
-    component: Examdescription
+    path: '/instructor/course/create',
+    name: 'InstructorCreateCourse',
+    component: InstructorEditCourse,
+    meta: { requiresAuth: true, instructorOnly: true }
   },
   {
-    path: '/exampage',
-    component: Exampage
+    path: '/instructor/course/:courseId/edit',
+    name: 'InstructorEditCourse',
+    component: InstructorEditCourse,
+    meta: { requiresAuth: true, instructorOnly: true },
+    props: true
   },
   {
-    path: '/examresult',
-    component: Examresult
+    path: '/instructor/course/:courseId/chapter/create',
+    name: 'InstructorCreateChapter',
+    component: InstructorCreateChapter,
+    meta: { requiresAuth: true, instructorOnly: true },
+    props: true
+  },
+  {
+    path: '/instructor/course/:courseId/chapter/:lessonId/edit',
+    name: 'InstructorEditChapter',
+    component: InstructorEditChapter,
+    meta: { requiresAuth: true, instructorOnly: true },
+    props: true
+  },
+  {
+    path: '/instructor/course/:courseId/exam/create',
+    name: 'InstructorCreateExam',
+    component: InstructorEditExam,
+    meta: { requiresAuth: true, instructorOnly: true },
+    props: true
+  },
+  {
+    path: '/instructor/exam/:examId/edit',
+    name: 'InstructorEditExam',
+    component: InstructorEditExam,
+    meta: { requiresAuth: true, instructorOnly: true },
+    props: true
+  },
+  {
+    path: '/instructor/exam/:examId/questions',
+    name: 'InstructorQuestionList',
+    component: InstructorQuestionList,
+    meta: { requiresAuth: true, instructorOnly: true },
+    props: true
+  },
+  {
+    path: '/instructor/exam/:examId/question/create',
+    name: 'InstructorCreateQuestion',
+    component: InstructorCreateQuestion,
+    meta: { requiresAuth: true, instructorOnly: true },
+    props: true
+  },
+  {
+    path: '/instructor/exam/:examId/question/:questionId/edit',
+    name: 'InstructorEditQuestion',
+    component: InstructorEditQuestion,
+    meta: { requiresAuth: true, instructorOnly: true },
+    props: true
   },
 
+  // Legacy redirects for backward compatibility
+  { path: '/course', redirect: '/coursebrowser' },
+  { path: '/chapterlist', redirect: '/coursebrowser' },
+  { path: '/details', redirect: '/coursebrowser' },
+  { path: '/examlist', redirect: '/coursebrowser' },
+  { path: '/examdesc', redirect: '/coursebrowser' },
+  { path: '/exampage', redirect: '/coursebrowser' },
+  { path: '/examresult', redirect: '/user' },
+  { path: '/coursedashboard', redirect: '/instructor/courses' },
+  { path: '/coursemanage', redirect: '/instructor/courses' },
+  
+  // Catch-all 404
   {
-    path: '/coursedashboard',
-    component: instructor_courselist
-  },
-  {
-    path: '/coursemanage',
-    component: instructor_editcourse
-  },
-  {
-    path: '/chaptercreate',
-    component: instructor_createchapter
-  },
-  {
-    path: '/chapteredit',
-    component: instructor_editchapter
-  },
-  {
-    path: '/exammanage',
-    component: instructor_editexam
-  },
-  {
-    path: '/examquestion',
-    component: instructor_questionlist
-  },
-  {
-    path: '/questioncreate',
-    component: instructor_createquestion
-  },
-  {
-    path: '/questionedit',
-    component: instructor_editquestion
+    path: '/:pathMatch(.*)*',
+    redirect: '/'
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  scrollBehavior() {
+    return { top: 0 }
+  }
 })
 
-// Auto-logout on login/signup, redirect authenticated / to /coursebrowser
-router.beforeEach(async (to) => {
-  const { isAuthenticated, logout } = useAuth()
+// Navigation Guards
+router.beforeEach(async (to, from, next) => {
+  const { isAuthenticated, currentUser, getCurrentUser } = useAuth()
 
+  // Try to get current user if not loaded
+  if (!currentUser.value) {
+    try {
+      await getCurrentUser()
+    } catch {
+      // Not logged in - continue
+    }
+  }
+
+  // Guest only pages (login, signup) - redirect to dashboard if logged in
   if (to.meta.guestOnly && isAuthenticated.value) {
-    await logout()
+    return next('/user')
   }
 
-  if (to.path === '/' && isAuthenticated.value) {
-    return '/coursebrowser'
+  // Protected routes - redirect to login if not authenticated
+  if (to.meta.requiresAuth && !isAuthenticated.value) {
+    return next('/login')
   }
+
+  // Instructor only routes
+  if (to.meta.instructorOnly && currentUser.value?.role !== 'instructor') {
+    return next('/user')
+  }
+
+  // Redirect home to dashboard if authenticated
+  if (to.path === '/' && isAuthenticated.value) {
+    return next('/user')
+  }
+
+  next()
 })
 
 export default router

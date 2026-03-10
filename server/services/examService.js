@@ -11,6 +11,35 @@ class ExamService {
     });
   }
 
+  async updateExam(examId, data) {
+    const updateData = {};
+    if (data.title) updateData.title = data.title;
+    if (data.total_questions !== undefined) {
+      updateData.total_questions = parseInt(data.total_questions);
+    }
+    
+    return await prisma.exams.update({
+      where: { id: parseInt(examId) },
+      data: updateData,
+    });
+  }
+
+  async deleteExam(examId) {
+    const examIdInt = parseInt(examId);
+    // Delete all exam results first
+    await prisma.exam_results.deleteMany({
+      where: { exam_id: examIdInt },
+    });
+    // Delete all questions
+    await prisma.questions.deleteMany({
+      where: { exam_id: examIdInt },
+    });
+    // Delete the exam
+    return await prisma.exams.delete({
+      where: { id: examIdInt },
+    });
+  }
+
   async createQuestions(examId, questionsData) {
     const examIdInt = parseInt(examId);
 
@@ -42,6 +71,33 @@ class ExamService {
     );
   }
 
+  async getQuestionById(questionId) {
+    return await prisma.questions.findUnique({
+      where: { id: parseInt(questionId) },
+    });
+  }
+
+  async updateQuestion(questionId, data) {
+    const updateData = {};
+    if (data.question_text) updateData.question_text = data.question_text;
+    if (data.option_a) updateData.option_a = data.option_a;
+    if (data.option_b) updateData.option_b = data.option_b;
+    if (data.option_c) updateData.option_c = data.option_c;
+    if (data.option_d) updateData.option_d = data.option_d;
+    if (data.correct_option) updateData.correct_option = data.correct_option;
+    
+    return await prisma.questions.update({
+      where: { id: parseInt(questionId) },
+      data: updateData,
+    });
+  }
+
+  async deleteQuestion(questionId) {
+    return await prisma.questions.delete({
+      where: { id: parseInt(questionId) },
+    });
+  }
+
   async getExamById(examId) {
     return await prisma.exams.findUnique({
       where: { id: parseInt(examId) },
@@ -54,9 +110,24 @@ class ExamService {
             option_b: true,
             option_c: true,
             option_d: true,
+            correct_option: true,
           },
         },
       },
+    });
+  }
+
+  async getExamsByCourse(courseId) {
+    return await prisma.exams.findMany({
+      where: { course_id: parseInt(courseId) },
+      include: {
+        questions: {
+          select: {
+            id: true,
+          },
+        },
+      },
+      orderBy: { id: "asc" },
     });
   }
 
