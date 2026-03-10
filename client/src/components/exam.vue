@@ -1,6 +1,7 @@
 <script setup>
 import Button from '@/assets/button.vue'
 import Progressbar from '@/assets/progressbar.vue'
+import { go } from '@/utils/navigation'
 import { theme } from '@/utils/theme'
 import { computed } from 'vue'
 
@@ -45,6 +46,6 @@ const classes = computed(() => {
         <p>จำนวนข้อ: {{ count }}</p>
         <p>คะแนนที่ดีที่สุด: {{ score }}/{{ maxscore }} ({{ percent }}%)</p>
         <Progressbar :progress="percent"/>
-        <Button>Enter</Button>
+        <Button @click="go('/examdesc')">Enter</Button>
     </div>
 </template>

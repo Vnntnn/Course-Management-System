@@ -9,6 +9,7 @@ import coursepage from '@/pages/coursepage.vue'
 import Chapterlist from '@/pages/chapterlist.vue'
 import Chapterdetail from '@/pages/chapterdetail.vue'
 import Examlist from '@/pages/examlist.vue'
+import Examdescription from '@/pages/examdescription.vue'
 
 const routes = [
   {
@@ -46,6 +47,10 @@ const routes = [
   {
     path: '/examlist',
     component: Examlist
+  },
+  {
+    path: '/examdesc',
+    component: Examdescription
   }
 ]
 
