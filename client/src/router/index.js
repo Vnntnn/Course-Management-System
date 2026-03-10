@@ -10,6 +10,8 @@ import Chapterlist from '@/pages/chapterlist.vue'
 import Chapterdetail from '@/pages/chapterdetail.vue'
 import Examlist from '@/pages/examlist.vue'
 import Examdescription from '@/pages/examdescription.vue'
+import Exampage from '@/pages/exampage.vue'
+import Examresult from '@/pages/examresult.vue'
 
 const routes = [
   {
@@ -51,6 +53,14 @@ const routes = [
   {
     path: '/examdesc',
     component: Examdescription
+  },
+  {
+    path: '/exampage',
+    component: Exampage
+  },
+  {
+    path: '/examresult',
+    component: Examresult
   }
 ]
 

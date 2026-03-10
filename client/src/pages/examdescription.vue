@@ -2,7 +2,7 @@
 
 import Contentcontainer from '@/assets/contentcontainer.vue';
 import Button from '@/assets/button.vue';
-import { goBack } from '@/utils/navigation';
+import { go, goBack } from '@/utils/navigation';
 
 const props = defineProps({
     number : {
@@ -26,7 +26,7 @@ const props = defineProps({
             <h1 class="text-4xl">Exam No: {{ number }}</h1>
             <p>จำนวนข้อ: {{ questionamount }}</p>
             <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas praesentium nemo eum veniam error accusamus, obcaecati, amet sed consequatur rerum, porro minima. Consectetur sunt vel dolorem omnis nihil, quibusdam ea!</p>
-            <Button class="m-5">Start Exam</Button>
+            <Button @click="go('/exampage')" class="m-5">Start Exam</Button>
         </Contentcontainer>
     </main>
 </template>
