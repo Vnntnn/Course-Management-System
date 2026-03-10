@@ -23,6 +23,7 @@ import instructor_editchapter from '@/pages/instructor_editchapter.vue'
 import instructor_editcourse from '@/pages/instructor_editcourse.vue'
 import instructor_editexam from '@/pages/instructor_editexam.vue'
 import instructor_editquestion from '@/pages/instructor_editquestion.vue'
+import instructor_questionlist from '@/pages/instructor_questionlist.vue'
 
 const routes = [
   {
@@ -42,7 +43,6 @@ const routes = [
     component: userdashboard
   },
 
-  // Course
   {
     path: '/coursebrowser',
     component: coursebrowser
@@ -52,7 +52,6 @@ const routes = [
     component: coursepage
   },
 
-  // Chapter
   {
     path: '/chapterlist',
     component: Chapterlist
@@ -62,7 +61,6 @@ const routes = [
     component: Chapterdetail
   },
 
-  // Exam (Student)
   {
     path: '/examlist',
     component: Examlist
@@ -80,7 +78,6 @@ const routes = [
     component: Examresult
   },
 
-  // Instructor
   {
     path: '/coursemanage',
     component: instructor_editcourse
@@ -98,16 +95,16 @@ const routes = [
     component: instructor_editexam
   },
   {
+    path: '/examquestion',
+    component: instructor_questionlist
+  },
+  {
     path: '/questioncreate',
     component: instructor_createquestion
   },
   {
     path: '/questionedit',
     component: instructor_editquestion
-  },
-  {
-    path: '/examquestion',
-    component: instructor_createquestion
   }
 ]
 

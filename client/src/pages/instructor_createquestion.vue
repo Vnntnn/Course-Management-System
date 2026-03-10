@@ -1,7 +1,14 @@
-<script setup></script>
+<script setup>
+import Contentcontainer from '@/assets/contentcontainer.vue';
+
+</script>
 
 <template>
     <main class="mt-24 mx-5">
-        Hello go to hell
+        <Contentcontainer>
+            <form action="createquestion">
+                
+            </form>
+        </Contentcontainer>
     </main>
 </template>

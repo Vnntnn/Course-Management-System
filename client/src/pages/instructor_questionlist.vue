@@ -1,37 +1,33 @@
 <script setup>
 import Button from '@/assets/button.vue'
 import Contentcontainer from '@/assets/contentcontainer.vue'
-import Exam from '@/components/exam.vue'
-import { goBack, go } from '@/utils/navigation'
+import { go, goBack } from '@/utils/navigation'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import * as icons from '@hugeicons/core-free-icons'
 </script>
 
 <template>
 
-<main class="mt-24 mx-5 space-y-5">
+<main class="mt-24 mx-5">
 
-<Button
-variant="primary_border"
-@click="goBack()"
->
-Back To Course
+<Button variant="primary_border" @click="goBack()">
+Back to Exam
 </Button>
 
-<div class="flex justify-between items-center">
+<div class="flex justify-between items-center p-5">
 
 <h1 class="text-4xl font-bold">
-Exam List
+Question List
 </h1>
 
 <Button
 class="flex gap-2"
-@click="go('/exammanage')"
+@click="go('/createquestion')"
 >
 
 <HugeiconsIcon :icon="icons.Add01Icon"/>
 
-Create Exam
+Create
 
 </Button>
 
@@ -39,10 +35,14 @@ Create Exam
 
 <Contentcontainer class="space-y-4">
 
-<!-- Instructor Mode -->
-<Exam role="instructor"/>
-<Exam role="instructor"/>
-<Exam role="instructor"/>
+<!-- Question cards -->
+<div class="p-4 rounded-xl bg-ci-secondary-1">
+Question 1
+</div>
+
+<div class="p-4 rounded-xl bg-ci-secondary-1">
+Question 2
+</div>
 
 </Contentcontainer>
 
