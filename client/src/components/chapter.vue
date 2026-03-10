@@ -19,11 +19,10 @@ const props = defineProps({
 </script>
 
 <template>
-    <div>
+    <div class="bg-bg-dark-1 p-5 rounded-xl">
         <img :src="thumbnail" alt="">
-        <h1>Chapter {{ chapternumber }}</h1>
-        <h1>{{ chaptername }}</h1>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum totam error cum animi quasi, voluptatibus vitae maxime a nisi voluptatem praesentium ut, iure tempore harum, repudiandae porro unde atque facere?</p>
+        <h1 class="text-2xl">Chapter {{ chapternumber }} - {{ chaptername }}</h1>
+        <p class="p-3">Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum totam error cum animi quasi, voluptatibus vitae maxime a nisi voluptatem praesentium ut, iure tempore harum, repudiandae porro unde atque facere?</p>
         <Button @click="go('/details')">Enter</Button>
     </div>
 </template>
