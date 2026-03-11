@@ -206,6 +206,24 @@ exports.getExamsByCourse = async (req, res) => {
   }
 };
 
+exports.getExamForInstructor = async (req, res) => {
+  try {
+    const { exam_id } = req.params;
+    const exam = await examService.getExamById(exam_id);
+    
+    if (!exam) return sendError(res, "Exam not found", HTTP_STATUS.NOT_FOUND);
+    
+    const course = await courseService.getCourseById(exam.course_id);
+    if (!course || course.instructor_id !== req.user.id) {
+      return sendError(res, "Unauthorized", HTTP_STATUS.FORBIDDEN);
+    }
+    
+    return sendResponse(res, exam, "Exam fetched successfully", HTTP_STATUS.OK);
+  } catch (error) {
+    return sendError(res, error.message, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+};
+
 exports.getExamForStudent = async (req, res) => {
   try {
     const { exam_id } = req.params;

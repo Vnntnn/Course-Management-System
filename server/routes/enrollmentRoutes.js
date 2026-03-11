@@ -20,11 +20,6 @@ router.get(
   isStudent,
   enrollmentController.getEnrolledCourses,
 );
-router.get(
-  "/check/:course_id",
-  ensureAuthenticated,
-  enrollmentController.checkEnrollment,
-);
 router.delete(
   "/unenroll/:course_id",
   ensureAuthenticated,
@@ -44,5 +39,4 @@ router.get(
   ensureAuthenticated,
   enrollmentController.checkEnrollment,
 );
-
 module.exports = router;

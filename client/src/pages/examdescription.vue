@@ -1,12 +1,18 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import Contentcontainer from '@/assets/contentcontainer.vue';
 import Button from '@/assets/button.vue';
-import { go, goBack } from '@/utils/navigation';
 import { examAPI } from '@/utils/api'
+import { useAuth } from '@/utils/auth'
 
-const params = new URLSearchParams(window.location.search)
-const examId = params.get('examId')
+const route = useRoute()
+const router = useRouter()
+
+const examId = computed(() => route.params.examId)
+
+const { currentUser } = useAuth()
+const role = computed(() => currentUser.value?.role || 'student')
 
 const exam = ref(null)
 const isLoading = ref(false)
@@ -71,7 +77,7 @@ onMounted(async () => {
         <Contentcontainer v-if="enrollChecked && !isEnrolled" class="text-center py-12 space-y-4">
             <h2 class="text-2xl font-bold">🔒 Enrollment Required</h2>
             <p class="text-text-400">You must enroll in this course before taking exams.</p>
-            <Button @click="go('/coursebrowser')">
+            <Button @click="router.push('/browse')">
                 Browse Courses
             </Button>
         </Contentcontainer>

@@ -10,7 +10,7 @@ const router = useRouter()
 
 const examId = computed(() => route.params.examId)
 const score = computed(() => route.query.score || '0')
-const total = computed(() => route.query.total || '0')
+const total = computed(() => route.query.maxscore || route.query.total || '0')
 const percentage = computed(() => {
     const s = parseInt(score.value)
     const t = parseInt(total.value)
@@ -50,7 +50,7 @@ const resultMessage = computed(() => {
             </p>
 
             <div class="flex gap-3 justify-center pt-4">
-                <Button @click="router.push('/user')">
+                <Button @click="router.push('/dashboard')">
                     Go to Dashboard
                 </Button>
                 <Button 
