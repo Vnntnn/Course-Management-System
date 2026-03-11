@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue'
 import Contentcontainer from '@/assets/contentcontainer.vue';
 import Button from '@/assets/button.vue';
-import { go, goBack } from '@/utils/navigation';
+import { go } from '@/utils/navigation';
 import { examAPI } from '@/utils/api'
 
 const params = new URLSearchParams(window.location.search)
