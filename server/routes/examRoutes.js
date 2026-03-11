@@ -34,6 +34,9 @@ router.get("/course/:courseId", ensureAuthenticated, examController.getExamsByCo
 // Student results
 router.get("/my-results", ensureAuthenticated, examController.getMyResults);
 
+// Get exam for instructor (with correct answers)
+router.get("/:exam_id/instructor", ensureAuthenticated, isInstructor, examController.getExamForInstructor);
+
 // Get exam and submit
 router.get("/:exam_id", ensureAuthenticated, examController.getExamForStudent);
 router.post("/:exam_id/submit", ensureAuthenticated, examController.submitExam);

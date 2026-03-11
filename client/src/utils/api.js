@@ -114,19 +114,22 @@ export const enrollmentAPI = {
   enroll: (data) => apiFetch('/api/enrollments/enroll', { method: 'POST', body: JSON.stringify(data) }),
   getStudentCourses: () => apiFetch('/api/enrollments/my-courses'),
   getCourseStudents: (courseId) => apiFetch(`/api/enrollments/courses/${courseId}/students`),
+  checkEnrollment: (courseId) => apiFetch(`/api/enrollments/check/${courseId}`),
 };
 
 // EXAM ENDPOINTS
 export const examAPI = {
-  create: (data) => { clearCache('/api/exams'); return apiFetch('/api/exams', { method: 'POST', body: JSON.stringify(data) }); },
-  update: (examId, data) => { clearCache('/api/exams'); return apiFetch(`/api/exams/${examId}`, { method: 'PUT', body: JSON.stringify(data) }); },
-  delete: (examId) => { clearCache('/api/exams'); return apiFetch(`/api/exams/${examId}`, { method: 'DELETE' }); },
-  addQuestions: (examId, questions) => { clearCache('/api/exams'); return apiFetch(`/api/exams/${examId}/questions`, { method: 'POST', body: JSON.stringify({ questions }) }); },
-  updateQuestion: (questionId, data) => { clearCache('/api/exams'); return apiFetch(`/api/exams/questions/${questionId}`, { method: 'PUT', body: JSON.stringify(data) }); },
-  deleteQuestion: (questionId) => { clearCache('/api/exams'); return apiFetch(`/api/exams/questions/${questionId}`, { method: 'DELETE' }); },
+  create: (data) => apiFetch('/api/exams', { method: 'POST', body: JSON.stringify(data) }).then(r => { clearCache('/api/exams'); return r; }),
+  update: (examId, data) => apiFetch(`/api/exams/${examId}`, { method: 'PUT', body: JSON.stringify(data) }).then(r => { clearCache('/api/exams'); return r; }),
+  delete: (examId) => apiFetch(`/api/exams/${examId}`, { method: 'DELETE' }).then(r => { clearCache('/api/exams'); return r; }),
+  addQuestions: (examId, questions) => apiFetch(`/api/exams/${examId}/questions`, { method: 'POST', body: JSON.stringify({ questions }) }).then(r => { clearCache('/api/exams'); return r; }),
+  updateQuestion: (questionId, data) => apiFetch(`/api/exams/questions/${questionId}`, { method: 'PUT', body: JSON.stringify(data) }).then(r => { clearCache('/api/exams'); return r; }),
+  deleteQuestion: (questionId) => apiFetch(`/api/exams/questions/${questionId}`, { method: 'DELETE' }).then(r => { clearCache('/api/exams'); return r; }),
   getById: (id) => cachedGet(`/api/exams/${id}`),
+  getByIdFresh: (id) => { clearCache(`/api/exams/${id}`); return apiFetch(`/api/exams/${id}`); },
+  getByIdForInstructor: (id) => apiFetch(`/api/exams/${id}/instructor`),
   getByCourse: (courseId) => cachedGet(`/api/exams/course/${courseId}`),
-  submit: (examId, answers) => { clearCache('/api/exams'); return apiFetch(`/api/exams/${examId}/submit`, { method: 'POST', body: JSON.stringify({ answers }) }); },
+  submit: (examId, answers) => apiFetch(`/api/exams/${examId}/submit`, { method: 'POST', body: JSON.stringify({ answers }) }).then(r => { clearCache('/api/exams'); return r; }),
   getResults: () => cachedGet('/api/exams/my-results'),
 };
 

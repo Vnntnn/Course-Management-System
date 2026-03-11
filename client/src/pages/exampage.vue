@@ -1,13 +1,18 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import Contentcontainer from '@/assets/contentcontainer.vue';
 import Button from '@/assets/button.vue';
-import { go, goBack } from '@/utils/navigation';
 import { examAPI } from '@/utils/api'
 import { useAuth } from '@/utils/auth'
 
-const params = new URLSearchParams(window.location.search)
-const examId = params.get('examId')
+const route = useRoute()
+const router = useRouter()
+
+const examId = computed(() => route.params.examId)
+
+const { currentUser } = useAuth()
+const role = computed(() => currentUser.value?.role || 'student')
 
 const exam = ref(null)
 const questions = ref([])
@@ -64,10 +69,10 @@ const submitExam = async () => {
 
     isSubmitting.value = true
     try {
-        const res = await examAPI.submit(examId, answerList)
-        const result = res.data
+        const res = await examAPI.submit(examId.value, answerList)
+        const summary = res.data?.summary || {}
         // Navigate to result page with score
-        go(`/examresult?score=${result.score || 0}&maxscore=${questions.value.length}&examId=${examId}`)
+        router.push(`/exam/${examId.value}/result?score=${summary.score || 0}&maxscore=${summary.total || questions.value.length}`)
     } catch (err) {
         error.value = err.message || 'Failed to submit exam'
     } finally {
@@ -99,7 +104,7 @@ onMounted(async () => {
         <Contentcontainer v-if="enrollChecked && !isEnrolled" class="text-center py-12 space-y-4">
             <h2 class="text-2xl font-bold">🔒 Enrollment Required</h2>
             <p class="text-text-400">You must enroll in this course before taking exams.</p>
-            <Button @click="go('/coursebrowser')">
+            <Button @click="router.push('/browse')">
                 Browse Courses
             </Button>
         </Contentcontainer>

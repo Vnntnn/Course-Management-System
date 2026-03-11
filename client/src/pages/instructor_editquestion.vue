@@ -26,6 +26,7 @@ const choices = ref([
 ])
 
 const correct = ref(0)
+const originalData = ref(null) // Track original values for change detection
 const getOptionLabel = (index) => String.fromCharCode(65 + index) // A, B, C, D, E...
 
 function addChoice() {
@@ -48,7 +49,8 @@ async function fetchQuestion() {
     if (!examId.value) return
     isLoading.value = true
     try {
-        const res = await examAPI.getById(examId.value)
+        // Use instructor endpoint to get correct_option
+        const res = await examAPI.getByIdForInstructor(examId.value)
         const questions = res.data?.questions || []
         const q = questions.find(q => q.id === parseInt(questionId.value))
         if (q) {
@@ -61,6 +63,13 @@ async function fetchQuestion() {
             ]
             correct.value = q.correct_option ? q.correct_option.charCodeAt(0) - 65 : 0
             if (correct.value < 0) correct.value = 0
+            
+            // Store original data for change detection
+            originalData.value = {
+                question: q.question_text,
+                choices: [q.option_a, q.option_b, q.option_c, q.option_d],
+                correct: correct.value
+            }
         }
     } catch (err) {
         error.value = err.message || 'Failed to load question'
@@ -96,6 +105,12 @@ async function saveQuestion() {
             correct_option: getOptionLabel(correct.value),
         })
         success.value = 'Question updated successfully!'
+        // Update originalData so hasChanges() returns false
+        originalData.value = {
+            question: question.value,
+            choices: choices.value.map(c => c.text),
+            correct: correct.value
+        }
     } catch (err) {
         error.value = err.message || 'Failed to update question'
     } finally {
@@ -103,7 +118,23 @@ async function saveQuestion() {
     }
 }
 
-const goBack = () => router.push(`/instructor/exam/${examId.value}/questions`)
+async function goBack() {
+    if (hasChanges()) {
+        await saveQuestion()
+    }
+    router.push(`/instructor/exam/${examId.value}/questions`)
+}
+
+function hasChanges() {
+    if (!originalData.value) return false
+    if (question.value !== originalData.value.question) return true
+    if (correct.value !== originalData.value.correct) return true
+    for (let i = 0; i < 4; i++) {
+        if (choices.value[i]?.text !== originalData.value.choices[i]) return true
+    }
+    return false
+}
+
 const goToExam = () => router.push(`/instructor/exam/${examId.value}/questions`)
 
 onMounted(fetchQuestion)

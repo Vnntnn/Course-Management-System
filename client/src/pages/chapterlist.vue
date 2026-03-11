@@ -5,7 +5,7 @@ import { HugeiconsIcon, Add01Icon } from '@/utils/icons'
 const icons = { Add01Icon }
 import Contentcontainer from '@/assets/contentcontainer.vue'
 import Button from '@/assets/button.vue'
-import { courseAPI } from '@/utils/api'
+import { courseAPI, enrollmentAPI } from '@/utils/api'
 import { useAuth } from '@/utils/auth'
 
 const route = useRoute()
@@ -30,9 +30,9 @@ const checkAccess = async () => {
         enrollChecked.value = true
         return
     }
-    if (!courseId) return
+    if (!courseId.value) return
     try {
-        const res = await enrollmentAPI.checkEnrollment(courseId)
+        const res = await enrollmentAPI.checkEnrollment(courseId.value)
         isEnrolled.value = res.data?.enrolled === true
     } catch {
         isEnrolled.value = false

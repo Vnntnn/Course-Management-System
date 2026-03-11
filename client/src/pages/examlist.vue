@@ -4,10 +4,9 @@ import { useRoute, useRouter } from 'vue-router'
 import Button from '@/assets/button.vue'
 import Contentcontainer from '@/assets/contentcontainer.vue'
 import Exam from '@/components/exam.vue'
-import { goBack, go } from '@/utils/navigation'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import * as icons from '@hugeicons/core-free-icons'
-import { courseAPI } from '@/utils/api'
+import { courseAPI, enrollmentAPI } from '@/utils/api'
 import { useAuth } from '@/utils/auth'
 
 const route = useRoute()
@@ -31,9 +30,9 @@ const checkAccess = async () => {
         enrollChecked.value = true
         return
     }
-    if (!courseId) return
+    if (!courseId.value) return
     try {
-        const res = await enrollmentAPI.checkEnrollment(courseId)
+        const res = await enrollmentAPI.checkEnrollment(courseId.value)
         isEnrolled.value = res.data?.enrolled === true
     } catch {
         isEnrolled.value = false
@@ -56,13 +55,11 @@ const fetchExams = async () => {
     }
 }
 
-const goBack = () => router.push(`/course/${courseId.value}/chapters`)
+const goBack = () => router.push(`/course/${courseId.value}`)
 
 onMounted(async () => {
     await checkAccess()
-    if (isEnrolled.value) {
-        await fetchExams()
-    }
+    await fetchExams()
 })
 </script>
 
@@ -106,7 +103,8 @@ Back To Course
     v-for="(exam, index) in exams"
     :key="exam.id"
     :number="String(index + 1)"
-    :count="String(exam.total_questions || 0)"
+    :title="exam.title"
+    :count="String(exam.questions?.length || exam.total_questions || 0)"
     :role="role"
     :examId="exam.id"
     :courseId="courseId"
